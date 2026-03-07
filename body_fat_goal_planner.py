@@ -774,7 +774,7 @@ div[data-baseweb="base-input"] {
 .floating-top-link {
     position: fixed !important;
     right: 20px !important;
-    bottom: 20px !important;
+    bottom: 84px !important;
     z-index: 999999 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1650,9 +1650,22 @@ if not comments_df.empty:
 
 st.markdown(
     """
-    <a href="#top" class="floating-top-link" title="Back to top">
-        ↑ Top
-    </a>
+    <div style="text-align:right; margin-top:14px; margin-bottom:4px;">
+        <a href="#top" class="floating-top-link" title="Back to top">
+            ↑ Top
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div style="text-align:center; margin-top:10px; margin-bottom:6px;">
+        <a href="#top" style="text-decoration:none;font-weight:700;color:#4f7ddf;">
+            ↑ Back to top
+        </a>
+    </div>
     """,
     unsafe_allow_html=True,
 )
