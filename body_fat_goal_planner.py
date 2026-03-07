@@ -699,8 +699,12 @@ div[data-baseweb="base-input"] {
     unsafe_allow_html=True,
 )
 
-st.title("Body Fat Goal Planner")
-st.caption("A calm planner for body fat, goal weight, timeline, calories, macros, and real progress tracking.")
+st.title("Blaze Body Fat Planner")
+st.image(
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Gray_circles_abstract.svg/512px-Gray_circles_abstract.svg.png",
+    width=80,
+)
+st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
     """
