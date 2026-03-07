@@ -440,6 +440,20 @@ html, body, [class*="css"] {
     color: #6b7280;
 }
 
+.brand-badge {
+    width: 82px;
+    height: 82px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #e8f1ff 0%, #d9f5e8 100%);
+    border: 1px solid rgba(231, 235, 241, 0.98);
+    box-shadow: 0 14px 30px rgba(114, 132, 160, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0.15rem 0 0.55rem 0;
+}
+
 .apple-card {
     border: 1px solid rgba(231, 235, 241, 0.98);
     border-radius: 24px;
@@ -700,10 +714,7 @@ div[data-baseweb="base-input"] {
 )
 
 st.title("Blaze Body Fat Planner")
-st.image(
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Gray_circles_abstract.svg/512px-Gray_circles_abstract.svg.png",
-    width=80,
-)
+st.markdown('<div class="brand-badge">🔥</div>', unsafe_allow_html=True)
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
