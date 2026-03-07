@@ -444,9 +444,9 @@ html, body, [class*="css"] {
     width: 82px;
     height: 82px;
     border-radius: 24px;
-    background: linear-gradient(135deg, #e8f1ff 0%, #d9f5e8 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    box-shadow: 0 14px 30px rgba(114, 132, 160, 0.12);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
