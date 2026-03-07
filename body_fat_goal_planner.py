@@ -1119,9 +1119,11 @@ with right:
         r2[3].metric("WHtR Zone", whtr_category(whtr_value))
 
         st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
-        r3a = st.columns(2)
+        months_to_goal = round(weeks_to_goal / 4.345, 1) if weeks_to_goal > 0 else 0
+        r3a = st.columns(3)
         r3a[0].metric("Lbs to Lose", round(max(0, weight - goal_weight), 2))
         r3a[1].metric("Weeks to Goal", weeks_to_goal)
+        r3a[2].metric("Months to Goal", months_to_goal)
 
         st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
         r3b = st.columns([1.35, 1])
