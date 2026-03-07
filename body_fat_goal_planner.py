@@ -440,18 +440,29 @@ html, body, [class*="css"] {
     color: #6b7280;
 }
 
-.brand-badge {
-    width: 82px;
-    height: 82px;
-    border-radius: 24px;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    margin: 0.15rem 0 0.55rem 0;
+
+.app-title {
+    margin: 0 0 0.15rem 0;
+    font-size: 2.35rem;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #1f2937;
+}
+
+.app-title-flame {
+    position: relative;
+    top: 4px;
+    display: inline-block;
+}
+
+.app-title-glow {
+    width: 220px;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(244,180,0,0) 0%, rgba(244,180,0,0.42) 50%, rgba(244,180,0,0) 100%);
+    filter: blur(8px);
+    margin: 0.12rem 0 0.55rem 0.1rem;
 }
 
 .apple-card {
@@ -713,7 +724,13 @@ div[data-baseweb="base-input"] {
     unsafe_allow_html=True,
 )
 
-st.markdown("<h1>Body Fat Burning Planner <span style='position:relative; top:4px;'>🔥</span></h1>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <div class="app-title">Body Fat Burning Planner <span class="app-title-flame">🔥</span></div>
+    <div class="app-title-glow"></div>
+    """,
+    unsafe_allow_html=True,
+)
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
