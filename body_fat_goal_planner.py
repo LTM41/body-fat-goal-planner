@@ -754,6 +754,23 @@ st.caption(f"Approx. visits: {total_visits}")
 
 st.markdown(
     """
+    <div class="panel-card" style="padding:12px 16px;margin-top:6px;">
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">Quick navigation</div>
+        <div style="font-size:0.85rem;line-height:1.8;">
+            <a href="#inputs">Inputs</a> ·
+            <a href="#results">Results</a> ·
+            <a href="#progress">Progress</a> ·
+            <a href="#milestones">Milestones</a> ·
+            <a href="#macros">Macros</a> ·
+            <a href="#community">Community</a>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
     <div class="hero-card">
         <div class="hero-orb one"></div>
         <div class="hero-orb two"></div>
@@ -811,6 +828,7 @@ st.markdown(
 
 left, right = st.columns([0.92, 1.08], gap="large")
 
+st.markdown('<div id="inputs"></div>', unsafe_allow_html=True)
 with left:
     st.markdown(
         """
@@ -1030,7 +1048,7 @@ with left:
         delete_progress_entry(delete_entry_id)
         st.success("Progress entry deleted.")
         st.rerun()
-
+st.markdown('<div id="results"></div>', unsafe_allow_html=True)
 with right:
     st.markdown(
         """
@@ -1134,6 +1152,7 @@ with right:
         r3b[1].metric("Body Fat Zone", body_fat_category(sex, bf))
 
         if not progress_df.empty:
+            st.markdown('<div id="progress"></div>', unsafe_allow_html=True)
             st.markdown(
                 """
                 <div class="panel-card" style="padding-bottom:14px;">
@@ -1226,6 +1245,7 @@ with right:
         st.line_chart(projection_df.set_index("Week")["Projected weight"], use_container_width=True)
         st.markdown("</div></div>", unsafe_allow_html=True)
 
+        st.markdown('<div id="milestones"></div>', unsafe_allow_html=True)
         st.subheader("Weight milestones")
         milestone_weights = build_weight_milestones(weight, goal_weight)
         st.caption("Simple guide: these are your estimated dates for each milestone weight.")
@@ -1273,6 +1293,7 @@ with right:
             st.dataframe(milestone_df, use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div id="macros"></div>', unsafe_allow_html=True)
         st.subheader("Calories and macros today")
 
         if not macro_total_ok:
@@ -1342,6 +1363,7 @@ with right:
         st.error(str(e))
 
 # ==== New full-width section: Community board and cards ====
+st.markdown('<div id="community"></div>', unsafe_allow_html=True)
 st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
 
 st.markdown(
