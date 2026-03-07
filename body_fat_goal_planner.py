@@ -770,11 +770,166 @@ div[data-baseweb="base-input"] {
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
 }
+
+.floating-top-link {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.94) 100%);
+    border: 1px solid rgba(231, 235, 241, 0.98);
+    box-shadow: 0 14px 28px rgba(114, 132, 160, 0.16);
+    color: #1f2937 !important;
+    text-decoration: none !important;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.floating-top-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 32px rgba(114, 132, 160, 0.20);
+}
+@media (prefers-color-scheme: dark) {
+    html, body, [class*="css"] {
+        color: #e5e7eb;
+    }
+
+    .stApp {
+        background:
+            radial-gradient(circle at top right, rgba(96, 165, 250, 0.12), transparent 26%),
+            radial-gradient(circle at bottom left, rgba(52, 211, 153, 0.10), transparent 24%),
+            linear-gradient(180deg, #0f172a 0%, #111827 52%, #0b1220 100%);
+    }
+
+    .panel-card,
+    .apple-card,
+    .top-summary-card,
+    .input-shell,
+    .chart-panel,
+    .chart-frame,
+    [data-testid="stMetric"],
+    [data-testid="stExpander"] {
+        background: linear-gradient(180deg, rgba(17, 24, 39, 0.96) 0%, rgba(15, 23, 42, 0.92) 100%) !important;
+        border: 1px solid rgba(75, 85, 99, 0.65) !important;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28) !important;
+    }
+
+    .hero-card {
+        background: linear-gradient(135deg, rgba(17,24,39,0.98) 0%, rgba(30,41,59,0.96) 45%, rgba(15,23,42,0.98) 100%) !important;
+        border: 1px solid rgba(75, 85, 99, 0.65) !important;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34) !important;
+    }
+
+    .soft-note,
+    .chart-note,
+    .top-summary-note,
+    .callout-chip,
+    .input-group-title,
+    .top-summary-kicker,
+    .chart-kicker,
+    .apple-card-body,
+    .apple-card-title,
+    .panel-card,
+    .hero-card,
+    .hero-card div,
+    .panel-card div,
+    .apple-card div {
+        color: #d1d5db !important;
+    }
+
+    .top-summary-value,
+    .app-title-text,
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricLabel"],
+    h1, h2, h3, h4, h5, h6,
+    label,
+    p,
+    span,
+    div {
+        color: inherit;
+    }
+
+    .callout-chip {
+        background: rgba(31, 41, 55, 0.92) !important;
+        border: 1px solid rgba(75, 85, 99, 0.72) !important;
+        color: #e5e7eb !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22) !important;
+    }
+
+    .beauty-divider {
+        background: linear-gradient(90deg, rgba(96,165,250,0) 0%, rgba(96,165,250,0.45) 50%, rgba(96,165,250,0) 100%) !important;
+    }
+
+    .zone-bar-shell {
+        border: 1px solid rgba(107, 114, 128, 0.72) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    }
+
+    a,
+    a:visited {
+        color: #93c5fd !important;
+    }
+
+    .stButton > button {
+        background: linear-gradient(180deg, rgba(31,41,55,0.98) 0%, rgba(17,24,39,0.94) 100%) !important;
+        border: 1px solid rgba(75, 85, 99, 0.72) !important;
+        color: #f3f4f6 !important;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24) !important;
+    }
+
+    .floating-top-link {
+        background: linear-gradient(180deg, rgba(31,41,55,0.98) 0%, rgba(17,24,39,0.94) 100%) !important;
+        border: 1px solid rgba(75, 85, 99, 0.72) !important;
+        color: #f3f4f6 !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28) !important;
+    }
+
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="base-input"],
+    textarea,
+    input {
+        background-color: rgba(17, 24, 39, 0.96) !important;
+        color: #f3f4f6 !important;
+        border-color: rgba(75, 85, 99, 0.72) !important;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+        color: #9ca3af !important;
+    }
+
+    [data-baseweb="select"] *,
+    [data-baseweb="input"] *,
+    [data-baseweb="base-input"] * {
+        color: #f3f4f6 !important;
+    }
+
+    .stTextArea label,
+    .stSelectbox label,
+    .stNumberInput label,
+    .stDateInput label,
+    .stSlider label {
+        color: #e5e7eb !important;
+    }
+
+    table, thead, tbody, tr, th, td {
+        color: #e5e7eb !important;
+    }
+}
 </style>
 """,
     unsafe_allow_html=True,
 )
 
+st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 st.title("Body Fat Burning Planner 🔥")
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 st.caption(f"Approx. visits: {total_visits}")
@@ -1489,6 +1644,14 @@ if not comments_df.empty:
     with st.expander("View previous feedback"):
         st.dataframe(comments_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
+st.markdown(
+    """
+    <a href="#top" class="floating-top-link">
+        ↑ Back to top
+    </a>
+    """,
+    unsafe_allow_html=True,
+)
 st.markdown(
     """
     <div style="margin-top:18px;color:#6b7280;font-size:0.84rem;text-align:center;line-height:1.6;">
