@@ -949,75 +949,12 @@ with left:
     st.markdown(
         """
         <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Mindset and community</div>
-            <div class="soft-note">Use the extra space to keep the planner motivating, realistic, and useful.</div>
+            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Community and mindset</div>
+            <div class="soft-note">Scroll below the planner for the full community board, motivation cards, and share prompts.</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown("### Community board")
-    st.caption("A calmer, more honest guide: real fat loss takes time, consistency, and patience.")
-    st.caption("Tip: share the planner with a friend and grow the community.")
-
-    cb1, cb2 = st.columns(2)
-    with cb1:
-        st.markdown(
-            """
-            <div class="apple-card">
-                <div class="apple-card-title">Honest timeline</div>
-                <div class="apple-card-body">
-                    <div>Most people will not get truly lean in 30 days.</div>
-                    <div>Real change usually takes months, not weeks.</div>
-                    <div>Steady progress is more realistic and more sustainable.</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with cb2:
-        st.markdown(
-            """
-            <div class="apple-card">
-                <div class="apple-card-title">Consistency wins</div>
-                <div class="apple-card-body">
-                    <div>You do not need perfection.</div>
-                    <div>You need enough good days, repeated over time.</div>
-                    <div>Habits beat short bursts of extreme effort.</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    cb3, cb4 = st.columns(2)
-    with cb3:
-        st.markdown(
-            """
-            <div class="apple-card">
-                <div class="apple-card-title">Enjoy the ride</div>
-                <div class="apple-card-body">
-                    <div>Fat loss is not a sprint. It is a marathon.</div>
-                    <div>Build a routine you can live with.</div>
-                    <div>Enjoy the ride to the you that you really want.</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with cb4:
-        st.markdown(
-            """
-            <div class="apple-card">
-                <div class="apple-card-title">Advertise here</div>
-                <div class="apple-card-body">
-                    <div>Your business could appear in this space.</div>
-                    <div>Ideal for fitness, golf, nutrition, coaching, or local services.</div>
-                    <div>Contact Blaze to reserve a slot.</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
     st.markdown(
         """
@@ -1403,6 +1340,77 @@ with right:
 
     except ValueError as e:
         st.error(str(e))
+
+# ==== New full-width section: Community board and cards ====
+st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="panel-card" style="padding-bottom:14px; margin-top:6px;">
+        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Community board</div>
+        <div class="soft-note">A calmer, more honest guide: real fat loss takes time, consistency, and patience. Share the planner with a friend and grow the community.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+cb1, cb2, cb3, cb4 = st.columns(4)
+with cb1:
+    st.markdown(
+        """
+        <div class="apple-card">
+            <div class="apple-card-title">Honest timeline</div>
+            <div class="apple-card-body">
+                <div>Most people will not get truly lean in 30 days.</div>
+                <div>Real change usually takes months, not weeks.</div>
+                <div>Steady progress is more realistic and more sustainable.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with cb2:
+    st.markdown(
+        """
+        <div class="apple-card">
+            <div class="apple-card-title">Consistency wins</div>
+            <div class="apple-card-body">
+                <div>You do not need perfection.</div>
+                <div>You need enough good days, repeated over time.</div>
+                <div>Habits beat short bursts of extreme effort.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with cb3:
+    st.markdown(
+        """
+        <div class="apple-card">
+            <div class="apple-card-title">Enjoy the ride</div>
+            <div class="apple-card-body">
+                <div>Fat loss is not a sprint. It is a marathon.</div>
+                <div>Build a routine you can live with.</div>
+                <div>Enjoy the ride to the you that you really want.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with cb4:
+    st.markdown(
+        """
+        <div class="apple-card">
+            <div class="apple-card-title">Advertise here</div>
+            <div class="apple-card-body">
+                <div>Your business could appear in this space.</div>
+                <div>Ideal for fitness, golf, nutrition, coaching, or local services.</div>
+                <div>Contact Blaze to reserve a slot.</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown(
     """
