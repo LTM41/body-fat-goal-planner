@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.pyo
+*.DS_Store
+body_fat_goal_progress.csv
