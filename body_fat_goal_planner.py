@@ -772,24 +772,26 @@ div[data-baseweb="base-input"] {
 }
 
 .floating-top-link {
-    position: fixed;
-    right: 22px;
-    bottom: 22px;
-    z-index: 9999;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 16px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.94) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    box-shadow: 0 14px 28px rgba(114, 132, 160, 0.16);
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 20px !important;
+    z-index: 999999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(244,247,251,0.98) 100%) !important;
+    border: 1px solid rgba(203, 213, 225, 1) !important;
+    box-shadow: 0 16px 32px rgba(114, 132, 160, 0.22) !important;
     color: #1f2937 !important;
     text-decoration: none !important;
-    font-size: 0.9rem;
-    font-weight: 800;
-    line-height: 1;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .floating-top-link:hover {
@@ -885,10 +887,12 @@ div[data-baseweb="base-input"] {
     }
 
     .floating-top-link {
-        background: linear-gradient(180deg, rgba(31,41,55,0.98) 0%, rgba(17,24,39,0.94) 100%) !important;
-        border: 1px solid rgba(75, 85, 99, 0.72) !important;
+        background: linear-gradient(180deg, rgba(31,41,55,1) 0%, rgba(17,24,39,0.98) 100%) !important;
+        border: 1px solid rgba(107, 114, 128, 0.9) !important;
         color: #f3f4f6 !important;
-        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28) !important;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.34) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
     div[data-baseweb="select"] > div,
@@ -1646,8 +1650,8 @@ if not comments_df.empty:
 
 st.markdown(
     """
-    <a href="#top" class="floating-top-link">
-        ↑ Back to top
+    <a href="#top" class="floating-top-link" title="Back to top">
+        ↑ Top
     </a>
     """,
     unsafe_allow_html=True,
