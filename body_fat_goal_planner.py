@@ -713,8 +713,7 @@ div[data-baseweb="base-input"] {
     unsafe_allow_html=True,
 )
 
-st.title("Blaze Body Fat Planner")
-st.markdown('<div class="brand-badge">🔥</div>', unsafe_allow_html=True)
+st.title("Blaze Body Fat Planner 🔥")
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
