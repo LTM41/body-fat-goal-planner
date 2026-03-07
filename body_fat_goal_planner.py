@@ -6,7 +6,9 @@ from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 
+
 PROGRESS_CSV = "body_fat_goal_progress.csv"
+STATS_CSV = "body_fat_app_stats.csv"
 
 
 # =============================
@@ -359,10 +361,52 @@ def progress_csv_bytes():
     return df.to_csv(index=False).encode("utf-8")
 
 
+def ensure_stats_csv_exists():
+    if not os.path.isfile(STATS_CSV):
+        pd.DataFrame([{"metric": "total_visits", "value": 0}]).to_csv(STATS_CSV, index=False)
+
+
+def get_total_visits():
+    ensure_stats_csv_exists()
+    df = pd.read_csv(STATS_CSV)
+    if df.empty or "metric" not in df.columns or "value" not in df.columns:
+        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
+        df.to_csv(STATS_CSV, index=False)
+        return 0
+    row = df.loc[df["metric"] == "total_visits", "value"]
+    if row.empty:
+        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
+        df.to_csv(STATS_CSV, index=False)
+        return 0
+    return int(pd.to_numeric(row.iloc[0], errors="coerce") or 0)
+
+
+def register_visit_once_per_session():
+    ensure_stats_csv_exists()
+    if st.session_state.get("visit_registered", False):
+        return get_total_visits()
+
+    df = pd.read_csv(STATS_CSV)
+    if df.empty or "metric" not in df.columns or "value" not in df.columns:
+        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
+
+    if "total_visits" not in df["metric"].tolist():
+        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
+
+    current_value = df.loc[df["metric"] == "total_visits", "value"].iloc[0]
+    current_value = int(pd.to_numeric(current_value, errors="coerce") or 0)
+    new_value = current_value + 1
+    df.loc[df["metric"] == "total_visits", "value"] = new_value
+    df.to_csv(STATS_CSV, index=False)
+    st.session_state["visit_registered"] = True
+    return new_value
+
+
 # =============================
 # APP
 # =============================
 st.set_page_config(page_title="Body Fat Goal Planner", layout="wide")
+total_visits = register_visit_once_per_session()
 
 st.markdown(
     """
@@ -703,6 +747,7 @@ div[data-baseweb="base-input"] {
 
 st.title("Body Fat Burning Planner 🔥")
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
+st.caption(f"Approx. visits: {total_visits}")
 
 st.markdown(
     """
@@ -721,6 +766,23 @@ st.markdown(
                 <span class="callout-chip">Realistic timelines</span>
                 <span class="callout-chip">Clear macro targets</span>
             </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="panel-card" style="margin-top:-4px;">
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:4px;">Share this planner</div>
+        <div class="soft-note">
+            If this helps you, share it with a friend who wants a calmer, more realistic way to track fat loss.
+        </div>
+        <div style="margin-top:8px;">
+            <span class="callout-chip">Send to a friend</span>
+            <span class="callout-chip">Share your progress</span>
+            <span class="callout-chip">Built for consistency</span>
         </div>
     </div>
     """,
@@ -892,6 +954,7 @@ with left:
     )
     st.markdown("### Community board")
     st.caption("A calmer, more honest guide: real fat loss takes time, consistency, and patience.")
+    st.caption("Tip: share the planner with a friend and grow the community.")
 
     cb1, cb2 = st.columns(2)
     with cb1:
