@@ -3,3 +3,6 @@ __pycache__/
 *.pyo
 *.DS_Store
 body_fat_goal_progress.csv
+body_progress.csv
+golf_progress.csv
+photo_progress.csv
