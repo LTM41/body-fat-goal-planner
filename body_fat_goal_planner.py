@@ -8,6 +8,7 @@ import streamlit as st
 
 
 PROGRESS_CSV = "body_fat_goal_progress.csv"
+COMMENTS_CSV = "body_fat_comments.csv"
 STATS_CSV = "body_fat_app_stats.csv"
 
 
@@ -352,6 +353,7 @@ def delete_progress_entry(entry_id):
     df.to_csv(PROGRESS_CSV, index=False)
 
 
+
 def progress_csv_bytes():
     df = load_progress_df()
     if "date_dt" in df.columns:
@@ -359,6 +361,31 @@ def progress_csv_bytes():
     if df.empty:
         df = pd.DataFrame(columns=["entry_id", "date", "weight", "waist", "body_fat"])
     return df.to_csv(index=False).encode("utf-8")
+
+
+# === Comments/Feedback helpers ===
+def ensure_comments_csv_exists():
+    if not os.path.isfile(COMMENTS_CSV):
+        pd.DataFrame(columns=["date", "comment"]).to_csv(COMMENTS_CSV, index=False)
+
+
+def load_comments_df():
+    ensure_comments_csv_exists()
+    df = pd.read_csv(COMMENTS_CSV)
+    return df
+
+
+def save_comment(comment_text):
+    ensure_comments_csv_exists()
+    df = load_comments_df()
+    new_row = pd.DataFrame([
+        {
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "comment": comment_text.strip()
+        }
+    ])
+    df = pd.concat([df, new_row], ignore_index=True)
+    df.to_csv(COMMENTS_CSV, index=False)
 
 
 def ensure_stats_csv_exists():
@@ -1433,6 +1460,34 @@ with cb4:
         """,
         unsafe_allow_html=True,
     )
+
+st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="panel-card">
+        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Help improve this planner</div>
+        <div class="soft-note">If you have an idea, bug report, or feature request, leave a quick comment below.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+user_comment = st.text_area("Your suggestion or feedback", height=120)
+
+if st.button("Submit comment"):
+    if user_comment.strip():
+        save_comment(user_comment)
+        st.success("Thanks — your feedback was saved.")
+        st.rerun()
+    else:
+        st.warning("Please write a comment before submitting.")
+
+comments_df = load_comments_df()
+
+if not comments_df.empty:
+    with st.expander("View previous feedback"):
+        st.dataframe(comments_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
 st.markdown(
     """
