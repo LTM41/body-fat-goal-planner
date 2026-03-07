@@ -713,7 +713,7 @@ div[data-baseweb="base-input"] {
     unsafe_allow_html=True,
 )
 
-st.title("Body Fat Burning Planner 🔥")
+st.markdown("<h1>Body Fat Burning Planner <span style='position:relative; top:4px;'>🔥</span></h1>", unsafe_allow_html=True)
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
