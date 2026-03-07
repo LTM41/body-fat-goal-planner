@@ -441,29 +441,6 @@ html, body, [class*="css"] {
 }
 
 
-.app-title {
-    margin: 0 0 0.15rem 0;
-    font-size: 2.35rem;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    color: #1f2937;
-}
-
-.app-title-flame {
-    position: relative;
-    top: 4px;
-    display: inline-block;
-}
-
-.app-title-glow {
-    width: 220px;
-    height: 10px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(244,180,0,0) 0%, rgba(244,180,0,0.42) 50%, rgba(244,180,0,0) 100%);
-    filter: blur(8px);
-    margin: 0.12rem 0 0.55rem 0.1rem;
-}
 
 .apple-card {
     border: 1px solid rgba(231, 235, 241, 0.98);
@@ -724,13 +701,7 @@ div[data-baseweb="base-input"] {
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <div class="app-title">Body Fat Burning Planner <span class="app-title-flame">🔥</span></div>
-    <div class="app-title-glow"></div>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("Body Fat Burning Planner 🔥")
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
 
 st.markdown(
