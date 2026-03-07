@@ -723,7 +723,7 @@ st.markdown(
         <div class="hero-orb one"></div>
         <div class="hero-orb two"></div>
         <div style="position:relative;z-index:2;">
-            <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6f87a7;margin-bottom:8px;">Body Fat Goal Planner</div>
+            <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6f87a7;margin-bottom:8px;">Blaze Body Fat Planner</div>
             <div style="font-size:1.42rem;font-weight:800;margin-bottom:8px;line-height:1.2;color:#1f2937;">Calm planning for steady body recomposition</div>
             <div class="soft-note" style="max-width:760px;">
                 Enter your details on the left and your results update live on the right.
@@ -1352,7 +1352,7 @@ with right:
 st.markdown(
     """
     <div style="margin-top:18px;color:#6b7280;font-size:0.84rem;text-align:center;line-height:1.6;">
-        Body Fat Goal Planner · Version 1<br>
+        Blaze Body Fat Planner · Version 1<br>
         Built for calm, realistic progress. Estimates only — not medical advice.
     </div>
     """,
