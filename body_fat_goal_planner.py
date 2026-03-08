@@ -8,7 +8,6 @@ import streamlit as st
 
 
 PROGRESS_CSV = "body_fat_goal_progress.csv"
-COMMENTS_CSV = "body_fat_comments.csv"
 STATS_CSV = "body_fat_app_stats.csv"
 
 
@@ -401,35 +400,6 @@ def progress_csv_bytes():
     if df.empty:
         df = pd.DataFrame(columns=["entry_id", "date", "weight", "waist", "body_fat"])
     return df.to_csv(index=False).encode("utf-8")
-
-
-# =============================
-# COMMENTS & VISITOR COUNTER HELPERS
-# =============================
-
-def ensure_comments_csv_exists():
-    if not os.path.isfile(COMMENTS_CSV):
-        pd.DataFrame(columns=["date", "comment"]).to_csv(COMMENTS_CSV, index=False)
-
-
-def load_comments_df():
-    ensure_comments_csv_exists()
-    return pd.read_csv(COMMENTS_CSV)
-
-
-def save_comment(comment_text):
-    ensure_comments_csv_exists()
-    df = load_comments_df()
-    new_row = pd.DataFrame(
-        [
-            {
-                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "comment": comment_text.strip(),
-            }
-        ]
-    )
-    df = pd.concat([df, new_row], ignore_index=True)
-    df.to_csv(COMMENTS_CSV, index=False)
 
 
 def ensure_stats_csv_exists():
@@ -832,9 +802,9 @@ with title_col:
 with visits_col:
     st.markdown(
         f"""
-        <div style="text-align:right; padding-top:10px;">
-            <div style="font-size:0.78rem; font-weight:700; color:#6b7280; margin-bottom:4px;">Visitors</div>
-            <div style="font-size:1.25rem; font-weight:800; color:#1f2937;">{total_visits}</div>
+        <div style="text-align:right; padding-top:12px;">
+            <div style="font-size:0.68rem; font-weight:700; color:#6b7280; margin-bottom:2px; letter-spacing:0.04em; text-transform:uppercase;">Visitors</div>
+            <div style="font-size:1rem; font-weight:800; color:#1f2937;">{total_visits}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -850,7 +820,6 @@ st.markdown(
             <a href="#progress">Progress</a> ·
             <a href="#milestones">Milestones</a> ·
             <a href="#macros">Macros</a> ·
-            <a href="#comments">Comments</a> ·
             <a href="#top">Top</a>
         </div>
         <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
@@ -872,7 +841,7 @@ st.markdown('<div id="inputs"></div>', unsafe_allow_html=True)
 with left:
 
 
-    sex = st.selectbox("Sex", ["Male", "Female"], index=0, placeholder="Select sex")
+    sex = st.selectbox("Sex", ["Select sex", "Male", "Female"], index=0)
     age = st.number_input("Age", min_value=10, max_value=100, value=30, step=1)
     weight = st.number_input("Weight (lbs)", min_value=1.0, value=180.0, step=0.1)
     height = st.number_input("Height (inches)", min_value=1.0, value=68.0, step=0.1)
@@ -888,7 +857,10 @@ with left:
     )
 
     try:
-        preview_bf = navy_body_fat(sex, height, waist, neck, hips)
+        if sex == "Select sex":
+            preview_bf = 25.0
+        else:
+            preview_bf = navy_body_fat(sex, height, waist, neck, hips)
     except ValueError:
         preview_bf = 25.0
 
@@ -1049,6 +1021,8 @@ with right:
 
 
     try:
+        if sex == "Select sex":
+            raise ValueError("Please select Male or Female to calculate your results.")
         bf = navy_body_fat(sex, height, waist, neck, hips)
         fat_mass, lean_mass = body_composition(weight, bf)
         goal_weight = goal_weight_for_target_body_fat(lean_mass, target_body_fat)
@@ -1190,26 +1164,6 @@ with right:
     except ValueError as e:
         st.error(str(e))
 
-st.markdown('<div id="comments"></div>', unsafe_allow_html=True)
-st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
-
-st.subheader("Leave a comment")
-st.caption("Share a suggestion, bug report, or quick thought about the planner.")
-
-user_comment = st.text_area("Your comment", height=120)
-
-if st.button("Submit comment"):
-    if user_comment.strip():
-        save_comment(user_comment)
-        st.success("Thanks — your comment was saved.")
-        st.rerun()
-    else:
-        st.warning("Please write a comment before submitting.")
-
-comments_df = load_comments_df()
-if not comments_df.empty:
-    with st.expander("Show previous comments"):
-        st.dataframe(comments_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
 st.markdown(
     """
