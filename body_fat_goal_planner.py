@@ -495,13 +495,59 @@ st.markdown(
 
 html, body, [class*="css"] {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+    color: #1f2937 !important;
 }
 
 .stApp {
     background:
         radial-gradient(circle at top right, rgba(163, 191, 250, 0.16), transparent 26%),
         radial-gradient(circle at bottom left, rgba(182, 226, 211, 0.14), transparent 24%),
-        linear-gradient(180deg, #f8fbff 0%, #f5f7fb 52%, #fdfaf7 100%);
+        linear-gradient(180deg, #f8fbff 0%, #f5f7fb 52%, #fdfaf7 100%) !important;
+    color: #1f2937 !important;
+}
+
+section[data-testid="stSidebar"],
+[data-testid="stAppViewContainer"],
+[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"] {
+    background: transparent !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+p, label, span, div {
+    color: #1f2937 !important;
+}
+
+a, a:visited {
+    color: #4f7ddf !important;
+}
+
+[data-baseweb="select"] > div,
+[data-baseweb="input"] > div,
+[data-baseweb="base-input"],
+textarea,
+input {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #d7dee8 !important;
+}
+
+textarea::placeholder,
+input::placeholder {
+    color: #6b7280 !important;
+}
+
+[data-baseweb="select"] *,
+[data-baseweb="input"] *,
+[data-baseweb="base-input"] * {
+    color: #1f2937 !important;
+}
+
+table, thead, tbody, tr, th, td {
+    color: #1f2937 !important;
+    background: transparent !important;
 }
 
 [data-testid="stMetricValue"] {
@@ -723,11 +769,12 @@ div[data-baseweb="base-input"] {
 .stButton > button {
     border-radius: 18px;
     border: 1px solid rgba(231, 235, 241, 0.98);
-    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.92) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.92) 100%) !important;
     box-shadow: 0 10px 22px rgba(114, 132, 160, 0.10);
     font-weight: 700;
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
+    color: #1f2937 !important;
 }
 
 </style>
