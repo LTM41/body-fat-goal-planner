@@ -277,6 +277,46 @@ def build_weight_milestones(current_weight, goal_weight):
     return milestones
 
 
+# New function for cleaner macro goal weights (6, rounded to 5-lb increments)
+def build_macro_weight_targets(current_weight, goal_weight, count=6):
+    current_weight = float(current_weight)
+    goal_weight = float(goal_weight)
+
+    if current_weight <= goal_weight:
+        return [round(current_weight)]
+
+    count = max(2, int(count))
+    step = (current_weight - goal_weight) / (count - 1)
+
+    weights = []
+    for i in range(count):
+        value = current_weight - (step * i)
+        rounded_value = int(round(value / 5.0) * 5)
+        weights.append(rounded_value)
+
+    weights[0] = int(round(current_weight / 5.0) * 5)
+    weights[-1] = int(round(goal_weight / 5.0) * 5)
+
+    cleaned = []
+    for w in weights:
+        if w not in cleaned and w > 0:
+            cleaned.append(w)
+
+    if len(cleaned) < count:
+        extra_candidates = sorted(
+            set(build_weight_milestones(current_weight, goal_weight)),
+            reverse=True,
+        )
+        for candidate in extra_candidates:
+            if candidate not in cleaned:
+                cleaned.append(candidate)
+            if len(cleaned) >= count:
+                break
+
+    cleaned = sorted(set(cleaned), reverse=True)
+    return cleaned[:count]
+
+
 def build_projection_df(current_weight, goal_weight, weekly_loss):
     if weekly_loss <= 0:
         return pd.DataFrame({"Week": [0], "Projected weight": [round(current_weight, 1)]})
@@ -1138,7 +1178,7 @@ with right:
             c4.metric("Carbs / Fats", f"{current_macros['carbs_g']} g / {current_macros['fats_g']} g")
 
             st.subheader("Calories and macros at goal weights")
-            goal_weights = build_weight_milestones(weight, goal_weight)
+            goal_weights = build_macro_weight_targets(weight, goal_weight, count=6)
 
             goal_macro_df = build_goal_macro_table(
                 sex=sex,
@@ -1152,7 +1192,7 @@ with right:
                 fats_pct=fats_pct,
             )
 
-            st.caption("Simple guide: each row shows a calm daily target for that body weight.")
+            st.caption("Simple guide: each row shows a calm daily target for one of your 6 key goal weights.")
 
             est_rows = []
             for gw in goal_weights:
