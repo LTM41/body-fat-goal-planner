@@ -855,29 +855,11 @@ st.markdown(
 
 
 
-st.markdown(
-    """
-    <div class="panel-card" style="padding-bottom:14px; margin-top:6px;">
-        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Start here</div>
-        <div class="soft-note">Enter your details first, then use the results on the right to review your goal weight, timeline, milestones, macros, and progress.</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
 left, right = st.columns([0.92, 1.08], gap="large")
 
 st.markdown('<div id="inputs"></div>', unsafe_allow_html=True)
 with left:
-    st.markdown(
-        """
-        <div class="panel-card">
-            <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;">Your inputs</div>
-            <div class="soft-note">Adjust the settings below and the planner updates live.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
     st.markdown(
         """
