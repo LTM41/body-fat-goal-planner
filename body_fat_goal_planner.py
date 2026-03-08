@@ -876,17 +876,17 @@ with left:
         unsafe_allow_html=True,
     )
 
-    sex = st.selectbox("Sex", ["Male", "Female"], index=0)
-    age = st.number_input("Age", min_value=10, max_value=100, value=48, step=1)
-    weight = st.number_input("Weight (lbs)", min_value=1.0, value=208.0, step=0.1)
-    height = st.number_input("Height (inches)", min_value=1.0, value=70.0, step=0.1)
-    waist = st.number_input("Waist (inches)", min_value=1.0, value=40.5, step=0.1)
-    neck = st.number_input("Neck (inches)", min_value=1.0, value=17.0, step=0.1)
+    sex = st.selectbox("Sex", ["Male", "Female"], index=0, placeholder="Select sex")
+    age = st.number_input("Age", min_value=10, max_value=100, value=30, step=1)
+    weight = st.number_input("Weight (lbs)", min_value=1.0, value=180.0, step=0.1)
+    height = st.number_input("Height (inches)", min_value=1.0, value=68.0, step=0.1)
+    waist = st.number_input("Waist (inches)", min_value=1.0, value=36.0, step=0.1)
+    neck = st.number_input("Neck (inches)", min_value=1.0, value=15.0, step=0.1)
 
     hips = st.number_input(
         "Hips (inches)",
         min_value=0.0,
-        value=0.0 if sex == "Male" else 42.0,
+        value=0.0 if sex == "Male" else 40.0,
         step=0.1,
         help="Required for females only",
     )
@@ -900,7 +900,7 @@ with left:
         "Target BF %",
         min_value=5,
         max_value=50,
-        value=18,
+        value=20,
         step=1,
     )
     render_body_fat_zone_bar(target_body_fat)
@@ -909,21 +909,21 @@ with left:
         "Weekly loss target (lbs)",
         min_value=0.1,
         max_value=3.0,
-        value=1.25,
+        value=1.0,
         step=0.05,
     )
 
     activity_label = st.selectbox(
         "Activity level",
         ["Sedentary", "Lightly active", "Moderately active", "Very active", "Extra active"],
-        index=2,
+        index=1,
     )
 
     calorie_deficit = st.number_input(
         "Calorie deficit",
         min_value=0,
         max_value=1500,
-        value=500,
+        value=400,
         step=50,
     )
     st.markdown('<div class="input-shell"><div class="input-group-title">Macro split</div></div>', unsafe_allow_html=True)
