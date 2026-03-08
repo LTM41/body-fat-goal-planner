@@ -791,18 +791,18 @@ st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidan
 st.markdown(
     """
     <div class="panel-card" style="padding:12px 16px;margin-top:6px;">
-        <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
-        <div style="font-size:0.85rem;line-height:1.6;color:#6b7280;margin-bottom:10px;">
-            Fill in your details on the left, then read your results on the right.
-        </div>
         <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">Quick links</div>
-        <div style="font-size:0.85rem;line-height:1.8;">
+        <div style="font-size:0.85rem;line-height:1.8;margin-bottom:10px;">
             <a href="#inputs">Inputs</a> ·
             <a href="#results">Results</a> ·
             <a href="#progress">Progress</a> ·
             <a href="#milestones">Milestones</a> ·
             <a href="#macros">Macros</a> ·
             <a href="#top">Top</a>
+        </div>
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
+        <div style="font-size:0.85rem;line-height:1.6;color:#6b7280;">
+            Fill in your details on the left, then read your results on the right.
         </div>
     </div>
     """,
