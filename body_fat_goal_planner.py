@@ -845,7 +845,7 @@ with left:
     age = st.number_input("Age", min_value=10, max_value=100, value=30, step=1)
     weight = st.number_input("Weight (lbs)", min_value=1.0, value=180.0, step=0.1)
     height = st.number_input("Height (inches)", min_value=1.0, value=68.0, step=0.1)
-    waist = st.number_input("Waist (inches)", min_value=1.0, value=36.0, step=0.1)
+    waist = st.number_input("Waist (inches — around belly button)", min_value=1.0, value=36.0, step=0.1)
     neck = st.number_input("Neck (inches)", min_value=1.0, value=15.0, step=0.1)
 
     hips = st.number_input(
