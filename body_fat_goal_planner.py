@@ -790,7 +790,7 @@ st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidan
 
 st.markdown(
     """
-    <div class="panel-card" style="padding:12px 16px;margin-top:6px;">
+    <div style="padding:4px 2px 10px 2px; margin-top:4px;">
         <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">Quick links</div>
         <div style="font-size:0.85rem;line-height:1.8;margin-bottom:10px;">
             <a href="#inputs">Inputs</a> ·
