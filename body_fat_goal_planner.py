@@ -8,8 +8,6 @@ import streamlit as st
 
 
 PROGRESS_CSV = "body_fat_goal_progress.csv"
-COMMENTS_CSV = "body_fat_comments.csv"
-STATS_CSV = "body_fat_app_stats.csv"
 
 
 # =============================
@@ -363,77 +361,12 @@ def progress_csv_bytes():
     return df.to_csv(index=False).encode("utf-8")
 
 
-# === Comments/Feedback helpers ===
-def ensure_comments_csv_exists():
-    if not os.path.isfile(COMMENTS_CSV):
-        pd.DataFrame(columns=["date", "comment"]).to_csv(COMMENTS_CSV, index=False)
-
-
-def load_comments_df():
-    ensure_comments_csv_exists()
-    df = pd.read_csv(COMMENTS_CSV)
-    return df
-
-
-def save_comment(comment_text):
-    ensure_comments_csv_exists()
-    df = load_comments_df()
-    new_row = pd.DataFrame([
-        {
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "comment": comment_text.strip()
-        }
-    ])
-    df = pd.concat([df, new_row], ignore_index=True)
-    df.to_csv(COMMENTS_CSV, index=False)
-
-
-def ensure_stats_csv_exists():
-    if not os.path.isfile(STATS_CSV):
-        pd.DataFrame([{"metric": "total_visits", "value": 0}]).to_csv(STATS_CSV, index=False)
-
-
-def get_total_visits():
-    ensure_stats_csv_exists()
-    df = pd.read_csv(STATS_CSV)
-    if df.empty or "metric" not in df.columns or "value" not in df.columns:
-        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
-        df.to_csv(STATS_CSV, index=False)
-        return 0
-    row = df.loc[df["metric"] == "total_visits", "value"]
-    if row.empty:
-        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
-        df.to_csv(STATS_CSV, index=False)
-        return 0
-    return int(pd.to_numeric(row.iloc[0], errors="coerce") or 0)
-
-
-def register_visit_once_per_session():
-    ensure_stats_csv_exists()
-    if st.session_state.get("visit_registered", False):
-        return get_total_visits()
-
-    df = pd.read_csv(STATS_CSV)
-    if df.empty or "metric" not in df.columns or "value" not in df.columns:
-        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
-
-    if "total_visits" not in df["metric"].tolist():
-        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
-
-    current_value = df.loc[df["metric"] == "total_visits", "value"].iloc[0]
-    current_value = int(pd.to_numeric(current_value, errors="coerce") or 0)
-    new_value = current_value + 1
-    df.loc[df["metric"] == "total_visits", "value"] = new_value
-    df.to_csv(STATS_CSV, index=False)
-    st.session_state["visit_registered"] = True
-    return new_value
 
 
 # =============================
 # APP
 # =============================
 st.set_page_config(page_title="Body Fat Goal Planner", layout="wide")
-total_visits = register_visit_once_per_session()
 
 st.markdown(
     """
@@ -771,33 +704,6 @@ div[data-baseweb="base-input"] {
     padding-bottom: 0.55rem;
 }
 
-.floating-top-link {
-    position: fixed !important;
-    right: 20px !important;
-    bottom: 84px !important;
-    z-index: 999999 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding: 12px 16px !important;
-    border-radius: 999px !important;
-    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(244,247,251,0.98) 100%) !important;
-    border: 1px solid rgba(203, 213, 225, 1) !important;
-    box-shadow: 0 16px 32px rgba(114, 132, 160, 0.22) !important;
-    color: #1f2937 !important;
-    text-decoration: none !important;
-    font-size: 0.95rem !important;
-    font-weight: 800 !important;
-    line-height: 1 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-.floating-top-link:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 18px 32px rgba(114, 132, 160, 0.20);
-}
 @media (prefers-color-scheme: dark) {
     html, body, [class*="css"] {
         color: #e5e7eb;
@@ -886,14 +792,6 @@ div[data-baseweb="base-input"] {
         box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24) !important;
     }
 
-    .floating-top-link {
-        background: linear-gradient(180deg, rgba(31,41,55,1) 0%, rgba(17,24,39,0.98) 100%) !important;
-        border: 1px solid rgba(107, 114, 128, 0.9) !important;
-        color: #f3f4f6 !important;
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.34) !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
 
     div[data-baseweb="select"] > div,
     div[data-baseweb="input"] > div,
@@ -936,7 +834,6 @@ div[data-baseweb="base-input"] {
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 st.title("Body Fat Burning Planner 🔥")
 st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
-st.caption(f"Approx. visits: {total_visits}")
 
 st.markdown(
     """
@@ -978,22 +875,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <div class="panel-card" style="margin-top:-4px;">
-        <div style="font-size:0.95rem;font-weight:700;margin-bottom:4px;">Share this planner</div>
-        <div class="soft-note">
-            If this helps you, share it with a friend who wants a calmer, more realistic way to track fat loss.
-        </div>
-        <div style="margin-top:8px;">
-            <span class="callout-chip">Send to a friend</span>
-            <span class="callout-chip">Share your progress</span>
-            <span class="callout-chip">Built for consistency</span>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
 st.markdown(
     """
@@ -1021,6 +902,21 @@ with left:
         <div class="panel-card">
             <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;">Your inputs</div>
             <div class="soft-note">Adjust the settings below and the planner updates live.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="panel-card" style="padding-bottom:14px;">
+            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">How to use this planner</div>
+            <div class="soft-note">
+                1. Enter your body details below.<br>
+                2. Choose your target body-fat percentage and weekly pace.<br>
+                3. Review your goal weight, timeline, milestones, and macros on the right.<br>
+                4. Save progress entries as you go so you can track your real results over time.
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1153,8 +1049,8 @@ with left:
     st.markdown(
         """
         <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Community and mindset</div>
-            <div class="soft-note">Scroll below the planner for the full community board, motivation cards, and share prompts.</div>
+            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Keep it simple</div>
+            <div class="soft-note">Use the planner, track your progress, and focus on steady consistency over time.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1500,122 +1396,11 @@ with right:
     except ValueError as e:
         st.error(str(e))
 
-# ==== New full-width section: Community board and cards ====
-st.markdown('<div id="community"></div>', unsafe_allow_html=True)
-st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <div class="panel-card" style="padding-bottom:14px; margin-top:6px;">
-        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Community board</div>
-        <div class="soft-note">A calmer, more honest guide: real fat loss takes time, consistency, and patience. Share the planner with a friend and grow the community.</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-cb1, cb2, cb3, cb4 = st.columns(4)
-with cb1:
-    st.markdown(
-        """
-        <div class="apple-card">
-            <div class="apple-card-title">Honest timeline</div>
-            <div class="apple-card-body">
-                <div>Most people will not get truly lean in 30 days.</div>
-                <div>Real change usually takes months, not weeks.</div>
-                <div>Steady progress is more realistic and more sustainable.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with cb2:
-    st.markdown(
-        """
-        <div class="apple-card">
-            <div class="apple-card-title">Consistency wins</div>
-            <div class="apple-card-body">
-                <div>You do not need perfection.</div>
-                <div>You need enough good days, repeated over time.</div>
-                <div>Habits beat short bursts of extreme effort.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with cb3:
-    st.markdown(
-        """
-        <div class="apple-card">
-            <div class="apple-card-title">Enjoy the ride</div>
-            <div class="apple-card-body">
-                <div>Fat loss is not a sprint. It is a marathon.</div>
-                <div>Build a routine you can live with.</div>
-                <div>Enjoy the ride to the you that you really want.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with cb4:
-    st.markdown(
-        """
-        <div class="apple-card">
-            <div class="apple-card-title">Advertise here</div>
-            <div class="apple-card-body">
-                <div>Your business could appear in this space.</div>
-                <div>Ideal for fitness, golf, nutrition, coaching, or local services.</div>
-                <div>Contact Blaze to reserve a slot.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <div class="panel-card">
-        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Help improve this planner</div>
-        <div class="soft-note">If you have an idea, bug report, or feature request, leave a quick comment below.</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-user_comment = st.text_area("Your suggestion or feedback", height=120)
-
-if st.button("Submit comment"):
-    if user_comment.strip():
-        save_comment(user_comment)
-        st.success("Thanks — your feedback was saved.")
-        st.rerun()
-    else:
-        st.warning("Please write a comment before submitting.")
-
-comments_df = load_comments_df()
-
-if not comments_df.empty:
-    with st.expander("View previous feedback"):
-        st.dataframe(comments_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
-
-st.markdown(
-    """
-    <div style="text-align:right; margin-top:14px; margin-bottom:4px;">
-        <a href="#top" class="floating-top-link" title="Back to top">
-            ↑ Top
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
 st.markdown(
     """
     <div style="text-align:center; margin-top:10px; margin-bottom:6px;">
         <a href="#top" style="text-decoration:none;font-weight:700;color:#4f7ddf;">
-            ↑ Back to top
+            Back to top
         </a>
     </div>
     """,
@@ -1624,7 +1409,7 @@ st.markdown(
 st.markdown(
     """
     <div style="margin-top:18px;color:#6b7280;font-size:0.84rem;text-align:center;line-height:1.6;">
-        Body Fat Burning Planner · Version 1<br>
+        Body Fat Burning Planner<br>
         Built for calm, realistic progress. Estimates only — not medical advice.
     </div>
     """,
