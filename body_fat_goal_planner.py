@@ -446,13 +446,13 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stMetric"] {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 251, 253, 0.92) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.95);
-    padding: 13px 15px;
-    border-radius: 22px;
-    box-shadow: 0 14px 30px rgba(114, 132, 160, 0.10);
-    backdrop-filter: blur(10px);
-    min-height: 112px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    min-height: 0;
 }
 
 
@@ -814,20 +814,6 @@ left, right = st.columns([0.92, 1.08], gap="large")
 st.markdown('<div id="inputs"></div>', unsafe_allow_html=True)
 with left:
 
-    st.markdown(
-        """
-        <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">How to use this planner</div>
-            <div class="soft-note">
-                1. Enter your body details below.<br>
-                2. Choose your target body-fat percentage and weekly pace.<br>
-                3. Review your goal weight, timeline, milestones, and macros on the right.<br>
-                4. Save progress entries as you go so you can track your real results over time.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
     sex = st.selectbox("Sex", ["Male", "Female"], index=0, placeholder="Select sex")
     age = st.number_input("Age", min_value=10, max_value=100, value=30, step=1)
@@ -879,7 +865,6 @@ with left:
         value=400,
         step=50,
     )
-    st.markdown('<div class="input-shell"><div class="input-group-title">Macro split</div></div>', unsafe_allow_html=True)
 
     m1, m2, m3 = st.columns(3)
     with m1:
@@ -893,15 +878,8 @@ with left:
         st.warning("Protein %, carbs %, and fats % should add up to 100.")
 
 
-    st.markdown(
-        """
-        <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">V1 essentials</div>
-            <div class="soft-note">A few simple launch-ready tools for saving data and understanding how the planner works.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.subheader("Tools")
+    st.caption("Download or reset your progress data.")
 
     download_col1, download_col2 = st.columns(2)
     with download_col1:
@@ -918,25 +896,9 @@ with left:
             st.success("Progress data reset.")
             st.rerun()
 
-    st.markdown(
-        """
-        <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Keep it simple</div>
-            <div class="soft-note">Use the planner, track your progress, and focus on steady consistency over time.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
-    st.markdown(
-        """
-        <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Progress tracker</div>
-            <div class="soft-note">Log your real progress and compare it with the plan over time.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.subheader("Progress tracker")
+    st.caption("Log your real progress and compare it with the plan over time.")
 
     progress_date = st.date_input("Progress date", value=datetime.now(), key="progress_date")
 
@@ -1071,11 +1033,15 @@ with right:
             st.subheader("Real progress")
             st.caption("Your saved entries sit here so you can compare actual progress with the plan.")
 
-            pg1, pg2, pg3 = st.columns(3)
             latest_progress = progress_df.sort_values("date").iloc[-1]
-            pg1.metric("Latest Logged Weight", f"{latest_progress['weight']} lbs")
-            pg2.metric("Latest Logged Waist", f"{latest_progress['waist']} in")
-            pg3.metric("Latest Logged Body Fat", f"{latest_progress['body_fat']} %")
+            latest_progress_df = pd.DataFrame(
+                [
+                    {"Latest measure": "Weight", "Value": f"{latest_progress['weight']} lbs"},
+                    {"Latest measure": "Waist", "Value": f"{latest_progress['waist']} in"},
+                    {"Latest measure": "Body fat", "Value": f"{latest_progress['body_fat']} %"},
+                ]
+            )
+            st.dataframe(latest_progress_df, use_container_width=True, hide_index=True)
 
             compare_df = progress_df.copy()
             if "date_dt" in compare_df.columns and compare_df["date_dt"].notna().any():
@@ -1130,11 +1096,15 @@ with right:
         if not macro_total_ok:
             st.error("Protein %, carbs %, and fats % must add up to exactly 100 before macro guidance can be shown.")
         else:
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("Maintenance Calories", f"{int(current_maintenance)} kcal")
-            c2.metric("Cutting Calories", f"{int(current_cutting)} kcal")
-            c3.metric("Protein", f"{current_macros['protein_g']} g")
-            c4.metric("Carbs / Fats", f"{current_macros['carbs_g']} g / {current_macros['fats_g']} g")
+            current_macro_df = pd.DataFrame(
+                [
+                    {"Today": "Maintenance calories", "Value": f"{int(current_maintenance)} kcal"},
+                    {"Today": "Cutting calories", "Value": f"{int(current_cutting)} kcal"},
+                    {"Today": "Protein", "Value": f"{current_macros['protein_g']} g"},
+                    {"Today": "Carbs / fats", "Value": f"{current_macros['carbs_g']} g / {current_macros['fats_g']} g"},
+                ]
+            )
+            st.dataframe(current_macro_df, use_container_width=True, hide_index=True)
 
             st.subheader("Calories and macros at goal weights")
             goal_weights = build_macro_weight_targets(weight, goal_weight, count=6)
