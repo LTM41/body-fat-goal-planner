@@ -1109,18 +1109,6 @@ with right:
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        """
-        <div class="panel-card" style="padding-bottom:14px;">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Disclaimer</div>
-            <div class="soft-note">
-                This planner provides estimates for educational purposes only and is not medical advice.
-                Real progress varies with health, hydration, adherence, sleep, stress, and normal body fluctuations.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
     try:
         bf = navy_body_fat(sex, height, waist, neck, hips)
@@ -1364,7 +1352,11 @@ st.markdown(
     """
     <div style="margin-top:18px;color:#6b7280;font-size:0.84rem;text-align:center;line-height:1.6;">
         Body Fat Burning Planner<br>
-        Built for calm, realistic progress. Estimates only — not medical advice.
+        Built for calm, realistic progress.
+        <div style="margin-top:8px;font-size:0.8rem;line-height:1.6;">
+            Disclaimer: This planner provides estimates for educational purposes only and is not medical advice.
+            Real progress varies with health, hydration, adherence, sleep, stress, and normal body fluctuations.
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
