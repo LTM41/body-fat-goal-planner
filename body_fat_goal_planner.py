@@ -8,6 +8,8 @@ import streamlit as st
 
 
 PROGRESS_CSV = "body_fat_goal_progress.csv"
+COMMENTS_CSV = "body_fat_comments.csv"
+STATS_CSV = "body_fat_app_stats.csv"
 
 
 # =============================
@@ -401,12 +403,83 @@ def progress_csv_bytes():
     return df.to_csv(index=False).encode("utf-8")
 
 
+# =============================
+# COMMENTS & VISITOR COUNTER HELPERS
+# =============================
+
+def ensure_comments_csv_exists():
+    if not os.path.isfile(COMMENTS_CSV):
+        pd.DataFrame(columns=["date", "comment"]).to_csv(COMMENTS_CSV, index=False)
+
+
+def load_comments_df():
+    ensure_comments_csv_exists()
+    return pd.read_csv(COMMENTS_CSV)
+
+
+def save_comment(comment_text):
+    ensure_comments_csv_exists()
+    df = load_comments_df()
+    new_row = pd.DataFrame(
+        [
+            {
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "comment": comment_text.strip(),
+            }
+        ]
+    )
+    df = pd.concat([df, new_row], ignore_index=True)
+    df.to_csv(COMMENTS_CSV, index=False)
+
+
+def ensure_stats_csv_exists():
+    if not os.path.isfile(STATS_CSV):
+        pd.DataFrame([{"metric": "total_visits", "value": 0}]).to_csv(STATS_CSV, index=False)
+
+
+def get_total_visits():
+    ensure_stats_csv_exists()
+    df = pd.read_csv(STATS_CSV)
+    if df.empty or "metric" not in df.columns or "value" not in df.columns:
+        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
+        df.to_csv(STATS_CSV, index=False)
+        return 0
+    row = df.loc[df["metric"] == "total_visits", "value"]
+    if row.empty:
+        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
+        df.to_csv(STATS_CSV, index=False)
+        return 0
+    return int(pd.to_numeric(row.iloc[0], errors="coerce") or 0)
+
+
+def register_visit_once_per_session():
+    ensure_stats_csv_exists()
+    if st.session_state.get("visit_registered", False):
+        return get_total_visits()
+
+    df = pd.read_csv(STATS_CSV)
+    if df.empty or "metric" not in df.columns or "value" not in df.columns:
+        df = pd.DataFrame([{"metric": "total_visits", "value": 0}])
+
+    if "total_visits" not in df["metric"].tolist():
+        df = pd.concat([df, pd.DataFrame([{"metric": "total_visits", "value": 0}])], ignore_index=True)
+
+    current_value = df.loc[df["metric"] == "total_visits", "value"].iloc[0]
+    current_value = int(pd.to_numeric(current_value, errors="coerce") or 0)
+    new_value = current_value + 1
+    df.loc[df["metric"] == "total_visits", "value"] = new_value
+    df.to_csv(STATS_CSV, index=False)
+    st.session_state["visit_registered"] = True
+    return new_value
+
+
 
 
 # =============================
 # APP
 # =============================
 st.set_page_config(page_title="Body Fat Goal Planner", layout="wide")
+total_visits = register_visit_once_per_session()
 
 st.markdown(
     """
@@ -785,8 +858,20 @@ div[data-baseweb="base-input"] {
 )
 
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
-st.title("Body Fat Burning Planner 🔥")
-st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
+title_col, visits_col = st.columns([0.82, 0.18])
+with title_col:
+    st.title("Body Fat Burning Planner 🔥")
+    st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
+with visits_col:
+    st.markdown(
+        f"""
+        <div style="text-align:right; padding-top:10px;">
+            <div style="font-size:0.78rem; font-weight:700; color:#6b7280; margin-bottom:4px;">Visitors</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#1f2937;">{total_visits}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown(
     """
@@ -798,6 +883,7 @@ st.markdown(
             <a href="#progress">Progress</a> ·
             <a href="#milestones">Milestones</a> ·
             <a href="#macros">Macros</a> ·
+            <a href="#comments">Comments</a> ·
             <a href="#top">Top</a>
         </div>
         <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
@@ -1136,6 +1222,27 @@ with right:
 
     except ValueError as e:
         st.error(str(e))
+
+st.markdown('<div id="comments"></div>', unsafe_allow_html=True)
+st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
+
+st.subheader("Leave a comment")
+st.caption("Share a suggestion, bug report, or quick thought about the planner.")
+
+user_comment = st.text_area("Your comment", height=120)
+
+if st.button("Submit comment"):
+    if user_comment.strip():
+        save_comment(user_comment)
+        st.success("Thanks — your comment was saved.")
+        st.rerun()
+    else:
+        st.warning("Please write a comment before submitting.")
+
+comments_df = load_comments_df()
+if not comments_df.empty:
+    with st.expander("Show previous comments"):
+        st.dataframe(comments_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
 st.markdown(
     """
