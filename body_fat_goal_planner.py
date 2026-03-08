@@ -493,10 +493,15 @@ st.markdown(
     margin: 0 auto;
 }
 
-html, body, [class*="css"] {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-    color: #1f2937 !important;
-}
+    :root {
+        color-scheme: light !important;
+    }
+
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+        color: #1f2937 !important;
+        background: #f8fbff !important;
+    }
 
 .stApp {
     background:
@@ -506,23 +511,36 @@ html, body, [class*="css"] {
     color: #1f2937 !important;
 }
 
-section[data-testid="stSidebar"],
-[data-testid="stAppViewContainer"],
-[data-testid="stHeader"],
-[data-testid="stToolbar"],
-[data-testid="stDecoration"],
-[data-testid="stStatusWidget"] {
-    background: transparent !important;
-}
+    section[data-testid="stSidebar"],
+    [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"],
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"],
+    [data-testid="stStatusWidget"],
+    .main,
+    .block-container {
+        background: transparent !important;
+        color: #1f2937 !important;
+    }
 
-h1, h2, h3, h4, h5, h6,
-p, label, span, div {
-    color: #1f2937 !important;
-}
+    h1, h2, h3, h4, h5, h6,
+    p, label, span, div, small, strong, em, li {
+        color: #1f2937 !important;
+    }
 
-a, a:visited {
-    color: #4f7ddf !important;
-}
+
+    a, a:visited {
+        color: #4f7ddf !important;
+    }
+
+    [data-testid="stMarkdownContainer"],
+    [data-testid="stMarkdownContainer"] *,
+    [data-testid="stCaptionContainer"],
+    [data-testid="stCaptionContainer"] *,
+    [data-testid="stText"],
+    [data-testid="stText"] * {
+        color: #1f2937 !important;
+    }
 
 [data-baseweb="select"] > div,
 [data-baseweb="input"] > div,
@@ -545,10 +563,12 @@ input::placeholder {
     color: #1f2937 !important;
 }
 
-table, thead, tbody, tr, th, td {
-    color: #1f2937 !important;
-    background: transparent !important;
-}
+    table, thead, tbody, tr, th, td,
+    [data-testid="stDataFrame"],
+    [data-testid="stDataFrame"] * {
+        color: #1f2937 !important;
+        background: transparent !important;
+    }
 
 [data-testid="stMetricValue"] {
     font-size: 1.08rem;
@@ -575,15 +595,28 @@ table, thead, tbody, tr, th, td {
 }
 
 
-.panel-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 251, 253, 0.92) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 28px;
-    padding: 20px 20px 14px 20px;
-    box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
-    backdrop-filter: blur(10px);
-    margin-bottom: 18px;
-}
+    .panel-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 251, 253, 0.92) 100%);
+        border: 1px solid rgba(231, 235, 241, 0.98);
+        border-radius: 28px;
+        padding: 20px 20px 14px 20px;
+        box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
+        backdrop-filter: blur(10px);
+        margin-bottom: 18px;
+    }
+
+    .panel-card *,
+    .input-shell *,
+    .zone-marker-wrap *,
+    .zone-bar-shell *,
+    [data-testid="stExpander"] *,
+    [data-testid="stSelectbox"] *,
+    [data-testid="stNumberInput"] *,
+    [data-testid="stDateInput"] *,
+    [data-testid="stTextArea"] *,
+    [data-testid="stSlider"] * {
+        color: #1f2937 !important;
+    }
 
 .input-shell {
     background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(249,250,252,0.93) 100%);
@@ -753,12 +786,13 @@ table, thead, tbody, tr, th, td {
     margin-top: 34px;
 }
 
-[data-testid="stExpander"] {
-    border: 1px solid #e7ebf1;
-    border-radius: 18px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.9);
-}
+    [data-testid="stExpander"] {
+        border: 1px solid #e7ebf1;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.96) !important;
+        color: #1f2937 !important;
+    }
 
 div[data-baseweb="select"] > div,
 div[data-baseweb="input"] > div,
@@ -766,16 +800,24 @@ div[data-baseweb="base-input"] {
     border-radius: 16px !important;
 }
 
-.stButton > button {
-    border-radius: 18px;
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.92) 100%) !important;
-    box-shadow: 0 10px 22px rgba(114, 132, 160, 0.10);
-    font-weight: 700;
-    padding-top: 0.55rem;
-    padding-bottom: 0.55rem;
-    color: #1f2937 !important;
-}
+    .stButton > button {
+        border-radius: 18px;
+        border: 1px solid rgba(231, 235, 241, 0.98);
+        background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(244,247,251,0.92) 100%) !important;
+        box-shadow: 0 10px 22px rgba(114, 132, 160, 0.10);
+        font-weight: 700;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        color: #1f2937 !important;
+    }
+
+    button, button *,
+    [data-testid="baseButton-secondary"],
+    [data-testid="baseButton-secondary"] *,
+    [data-testid="baseButton-primary"],
+    [data-testid="baseButton-primary"] * {
+        color: #1f2937 !important;
+    }
 
 </style>
 """,
