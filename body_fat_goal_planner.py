@@ -791,20 +791,18 @@ st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidan
 st.markdown(
     """
     <div class="panel-card" style="padding:12px 16px;margin-top:6px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;">
-            <div style="font-size:0.85rem;line-height:1.8;">
-                <span style="font-weight:700;">Quick links:</span>
-                <a href="#inputs">Inputs</a> ·
-                <a href="#results">Results</a> ·
-                <a href="#progress">Progress</a> ·
-                <a href="#milestones">Milestones</a> ·
-                <a href="#macros">Macros</a> ·
-                <a href="#top">Top</a>
-            </div>
-            <div style="font-size:0.85rem;line-height:1.6;color:#6b7280;max-width:420px;">
-                <span style="font-weight:700;color:#374151;">How to use:</span>
-                Fill in your details on the left, then read your results on the right.
-            </div>
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
+        <div style="font-size:0.85rem;line-height:1.6;color:#6b7280;margin-bottom:10px;">
+            Fill in your details on the left, then read your results on the right.
+        </div>
+        <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">Quick links</div>
+        <div style="font-size:0.85rem;line-height:1.8;">
+            <a href="#inputs">Inputs</a> ·
+            <a href="#results">Results</a> ·
+            <a href="#progress">Progress</a> ·
+            <a href="#milestones">Milestones</a> ·
+            <a href="#macros">Macros</a> ·
+            <a href="#top">Top</a>
         </div>
     </div>
     """,
