@@ -1034,13 +1034,6 @@ with right:
         if "date_dt" in progress_df.columns:
             progress_df = progress_df.sort_values(["date_dt", "entry_id"], ascending=[True, True]).reset_index(drop=True)
 
-        st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
-        r1 = st.columns(4)
-        r1[0].metric("Body Fat %", bf)
-        r1[1].metric("Fat Mass", f"{fat_mass} lbs")
-        r1[2].metric("Lean Mass", f"{lean_mass} lbs")
-        r1[3].metric("Goal Weight", f"{goal_weight} lbs")
-
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
         st.subheader("Progress to target")
         if not progress_df.empty and "body_fat" in progress_df.columns:
@@ -1052,24 +1045,26 @@ with right:
         st.caption(f"Tracking from {round(start_bf_for_progress, 1)}% toward {target_body_fat}% body fat")
         render_body_fat_zone_bar(bf)
 
-        st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
-        r2 = st.columns(4)
-        r2[0].metric("BMI", bmi_value)
-        r2[1].metric("BMI Zone", bmi_category(bmi_value))
-        r2[2].metric("WHtR", whtr_value)
-        r2[3].metric("WHtR Zone", whtr_category(whtr_value))
-
-        st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
         months_to_goal = round(weeks_to_goal / 4.345, 1) if weeks_to_goal > 0 else 0
-        r3a = st.columns(3)
-        r3a[0].metric("Lbs to Lose", round(max(0, weight - goal_weight), 2))
-        r3a[1].metric("Weeks to Goal", weeks_to_goal)
-        r3a[2].metric("Months to Goal", months_to_goal)
 
-        st.markdown('<div class="section-row-space"></div>', unsafe_allow_html=True)
-        r3b = st.columns([1.35, 1])
-        r3b[0].metric("Goal Date", goal_date)
-        r3b[1].metric("Body Fat Zone", body_fat_category(sex, bf))
+        overview_rows = [
+            {"Measure": "Body fat %", "Value": bf},
+            {"Measure": "Fat mass", "Value": f"{fat_mass} lbs"},
+            {"Measure": "Lean mass", "Value": f"{lean_mass} lbs"},
+            {"Measure": "Goal weight", "Value": f"{goal_weight} lbs"},
+            {"Measure": "BMI", "Value": bmi_value},
+            {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
+            {"Measure": "WHtR", "Value": whtr_value},
+            {"Measure": "WHtR zone", "Value": whtr_category(whtr_value)},
+            {"Measure": "Lbs to lose", "Value": round(max(0, weight - goal_weight), 2)},
+            {"Measure": "Weeks to goal", "Value": weeks_to_goal},
+            {"Measure": "Months to goal", "Value": months_to_goal},
+            {"Measure": "Goal date", "Value": goal_date},
+            {"Measure": "Body fat zone", "Value": body_fat_category(sex, bf)},
+        ]
+
+        st.subheader("Results summary")
+        st.dataframe(pd.DataFrame(overview_rows), use_container_width=True, hide_index=True)
 
         if not progress_df.empty:
             st.markdown('<div id="progress"></div>', unsafe_allow_html=True)
