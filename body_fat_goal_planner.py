@@ -57,10 +57,12 @@ def goal_weight_for_target_body_fat(lean_mass, target_body_fat):
     return round(lean_mass / (1 - target_body_fat / 100), 2)
 
 
-def estimated_weeks_to_goal(current_weight, goal_weight, weekly_loss=1.25):
-    if weekly_loss <= 0 or current_weight <= goal_weight:
+def estimated_weeks_to_goal(current_weight, goal_weight, weekly_change=1.25):
+    if weekly_change <= 0:
         return 0
-    return math.ceil((current_weight - goal_weight) / weekly_loss)
+    if current_weight == goal_weight:
+        return 0
+    return math.ceil(abs(current_weight - goal_weight) / weekly_change)
 
 
 def projected_goal_date(weeks_to_goal):
@@ -121,12 +123,12 @@ def body_fat_category(sex, body_fat_value):
     return "Unknown"
 
 
-def predict_date_for_weight(current_weight, target_weight, weekly_loss):
-    if weekly_loss <= 0:
+def predict_date_for_weight(current_weight, target_weight, weekly_change):
+    if weekly_change <= 0:
         return "N/A"
-    if current_weight <= target_weight:
+    if current_weight == target_weight:
         return "Reached"
-    weeks = math.ceil((current_weight - target_weight) / weekly_loss)
+    weeks = math.ceil(abs(current_weight - target_weight) / weekly_change)
     return (datetime.now() + timedelta(weeks=weeks)).strftime("%Y-%m-%d")
 
 
@@ -283,15 +285,15 @@ def build_macro_weight_targets(current_weight, goal_weight, count=6):
     current_weight = float(current_weight)
     goal_weight = float(goal_weight)
 
-    if current_weight <= goal_weight:
-        return [round(current_weight)]
+    if current_weight == goal_weight:
+        return [int(round(current_weight / 5.0) * 5)]
 
     count = max(2, int(count))
-    step = (current_weight - goal_weight) / (count - 1)
+    step = (goal_weight - current_weight) / (count - 1)
 
     weights = []
     for i in range(count):
-        value = current_weight - (step * i)
+        value = current_weight + (step * i)
         rounded_value = int(round(value / 5.0) * 5)
         weights.append(rounded_value)
 
@@ -304,18 +306,18 @@ def build_macro_weight_targets(current_weight, goal_weight, count=6):
             cleaned.append(w)
 
     if len(cleaned) < count:
-        extra_candidates = sorted(
-            set(build_weight_milestones(current_weight, goal_weight)),
-            reverse=True,
-        )
+        milestone_candidates = build_weight_milestones(current_weight, goal_weight)
+        if goal_weight >= current_weight:
+            extra_candidates = sorted(set(milestone_candidates))
+        else:
+            extra_candidates = sorted(set(milestone_candidates), reverse=True)
         for candidate in extra_candidates:
             if candidate not in cleaned:
                 cleaned.append(candidate)
             if len(cleaned) >= count:
                 break
 
-    cleaned = sorted(set(cleaned), reverse=True)
-    return cleaned[:count]
+    return sorted(set(cleaned), reverse=(goal_weight < current_weight))[:count]
 
 
 def build_projection_df(current_weight, goal_weight, weekly_loss):
@@ -1073,7 +1075,7 @@ with right:
             {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
             {"Measure": "WHtR (waist-to-height ratio)", "Value": whtr_value},
             {"Measure": "WHtR zone", "Value": whtr_category(whtr_value)},
-            {"Measure": "Lbs to lose", "Value": round(max(0, weight - goal_weight), 2)},
+            {"Measure": "Lbs to goal", "Value": round(abs(weight - goal_weight), 2)},
             {"Measure": "Weeks to goal", "Value": weeks_to_goal},
             {"Measure": "Months to goal", "Value": months_to_goal},
             {"Measure": "Goal date", "Value": goal_date},
@@ -1098,10 +1100,10 @@ with right:
         for mw in milestone_weights:
             if mw == round(goal_weight):
                 status = "Goal"
-            elif mw < weight:
-                status = "Milestone"
+            elif goal_weight < weight:
+                status = "Milestone" if mw < weight else "Current range"
             else:
-                status = "Current range"
+                status = "Milestone" if mw > weight else "Current range"
 
             milestone_rows.append(
                 {
