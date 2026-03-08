@@ -933,31 +933,35 @@ with left:
             key="progress_body_fat",
         )
 
-    tracker_col1, tracker_col2 = st.columns(2)
-    with tracker_col1:
+    progress_df_sidebar = load_progress_df()
+
+    action_col1, action_col2 = st.columns([1, 1])
+    with action_col1:
         save_progress_clicked = st.button("Save progress entry", use_container_width=True)
-    with tracker_col2:
-        progress_df_sidebar = load_progress_df()
+    with action_col2:
         if not progress_df_sidebar.empty:
-            delete_options_df = progress_df_sidebar.sort_values(["date", "entry_id"], ascending=[False, False]).copy()
-            delete_options_df["delete_label"] = (
-                delete_options_df["date"].astype(str)
-                + " | "
-                + delete_options_df["weight"].astype(str)
-                + " lbs | BF "
-                + delete_options_df["body_fat"].astype(str)
-                + "%"
-            )
-            delete_entry_id = st.selectbox(
-                "Delete saved entry",
-                options=delete_options_df["entry_id"].tolist(),
-                format_func=lambda x: delete_options_df.loc[delete_options_df["entry_id"] == x, "delete_label"].iloc[0],
-                key="delete_progress_entry_id",
-            )
             delete_progress_clicked = st.button("Delete selected entry", use_container_width=True)
         else:
-            delete_entry_id = None
             delete_progress_clicked = False
+
+    if not progress_df_sidebar.empty:
+        delete_options_df = progress_df_sidebar.sort_values(["date", "entry_id"], ascending=[False, False]).copy()
+        delete_options_df["delete_label"] = (
+            delete_options_df["date"].astype(str)
+            + " | "
+            + delete_options_df["weight"].astype(str)
+            + " lbs | BF "
+            + delete_options_df["body_fat"].astype(str)
+            + "%"
+        )
+        delete_entry_id = st.selectbox(
+            "Delete saved entry",
+            options=delete_options_df["entry_id"].tolist(),
+            format_func=lambda x: delete_options_df.loc[delete_options_df["entry_id"] == x, "delete_label"].iloc[0],
+            key="delete_progress_entry_id",
+        )
+    else:
+        delete_entry_id = None
 
     if save_progress_clicked:
         save_progress_entry(progress_date, progress_weight, progress_waist, progress_body_fat)
@@ -968,6 +972,25 @@ with left:
         delete_progress_entry(delete_entry_id)
         st.success("Progress entry deleted.")
         st.rerun()
+
+
+    if not progress_df_sidebar.empty:
+        st.markdown('<div id="progress"></div>', unsafe_allow_html=True)
+        st.subheader("Real progress")
+        st.caption("Your saved entries sit here so you can compare actual progress with the plan.")
+
+        latest_progress = progress_df_sidebar.sort_values("date").iloc[-1]
+        latest_progress_df = pd.DataFrame(
+            [
+                {"Latest measure": "Weight", "Value": f"{latest_progress['weight']} lbs"},
+                {"Latest measure": "Waist", "Value": f"{latest_progress['waist']} in"},
+                {"Latest measure": "Body fat", "Value": f"{latest_progress['body_fat']} %"},
+            ]
+        )
+        st.dataframe(latest_progress_df, use_container_width=True, hide_index=True)
+
+        with st.expander("Show saved progress table"):
+            st.dataframe(progress_df_sidebar.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 st.markdown('<div id="results"></div>', unsafe_allow_html=True)
 with right:
 
@@ -1011,6 +1034,7 @@ with right:
         st.caption(f"Tracking from {round(start_bf_for_progress, 1)}% toward {target_body_fat}% body fat")
         render_body_fat_zone_bar(bf)
 
+
         months_to_goal = round(weeks_to_goal / 4.345, 1) if weeks_to_goal > 0 else 0
 
         overview_rows = [
@@ -1031,36 +1055,6 @@ with right:
 
         st.subheader("Results summary")
         st.dataframe(pd.DataFrame(overview_rows), use_container_width=True, hide_index=True)
-
-        if not progress_df.empty:
-            st.markdown('<div id="progress"></div>', unsafe_allow_html=True)
-            st.subheader("Real progress")
-            st.caption("Your saved entries sit here so you can compare actual progress with the plan.")
-
-            latest_progress = progress_df.sort_values("date").iloc[-1]
-            latest_progress_df = pd.DataFrame(
-                [
-                    {"Latest measure": "Weight", "Value": f"{latest_progress['weight']} lbs"},
-                    {"Latest measure": "Waist", "Value": f"{latest_progress['waist']} in"},
-                    {"Latest measure": "Body fat", "Value": f"{latest_progress['body_fat']} %"},
-                ]
-            )
-            st.dataframe(latest_progress_df, use_container_width=True, hide_index=True)
-
-            compare_df = progress_df.copy()
-            if "date_dt" in compare_df.columns and compare_df["date_dt"].notna().any():
-                first_date = compare_df["date_dt"].min()
-                compare_df["Week"] = ((compare_df["date_dt"] - first_date).dt.days / 7).fillna(0).round().astype(int)
-            else:
-                compare_df["Week"] = range(len(compare_df))
-
-            projected_compare = build_projection_df(weight, goal_weight, weekly_loss).copy()
-            if not projected_compare.empty:
-                projected_compare = projected_compare.rename(columns={"Projected weight": "Projected weight line"})
-
-
-            with st.expander("Show saved progress table"):
-                st.dataframe(progress_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
         st.subheader("Your fat-loss path")
