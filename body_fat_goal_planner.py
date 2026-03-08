@@ -1366,39 +1366,6 @@ with right:
             if not projected_compare.empty:
                 projected_compare = projected_compare.rename(columns={"Projected weight": "Projected weight line"})
 
-            chart_col1, chart_col2 = st.columns(2)
-            with chart_col1:
-                actual_vs_projected = pd.merge(
-                    compare_df[["Week", "weight"]].rename(columns={"weight": "Actual weight line"}),
-                    projected_compare[["Week", "Projected weight line"]],
-                    on="Week",
-                    how="outer",
-                ).sort_values("Week")
-                st.markdown(
-                    """
-                    <div class="chart-panel">
-                        <div class="chart-kicker">Progress chart</div>
-                        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Actual vs projected weight</div>
-                        <div class="chart-note">A calm side-by-side view of where you are versus the pace of the plan.</div>
-                        <div class="chart-frame">
-                    """,
-                    unsafe_allow_html=True,
-                )
-                st.line_chart(actual_vs_projected.set_index("Week"), use_container_width=True)
-                st.markdown("</div></div>", unsafe_allow_html=True)
-            with chart_col2:
-                st.markdown(
-                    """
-                    <div class="chart-panel">
-                        <div class="chart-kicker">Progress chart</div>
-                        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Actual body fat trend</div>
-                        <div class="chart-note">Your logged body-fat entries shown as a simple trend over time.</div>
-                        <div class="chart-frame">
-                    """,
-                    unsafe_allow_html=True,
-                )
-                st.line_chart(compare_df.set_index("date")["body_fat"], use_container_width=True)
-                st.markdown("</div></div>", unsafe_allow_html=True)
 
             with st.expander("Show saved progress table"):
                 st.dataframe(progress_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
@@ -1415,21 +1382,6 @@ with right:
         )
 
         projection_df = build_projection_df(weight, goal_weight, weekly_loss)
-        st.markdown(
-            """
-            <div class="chart-panel">
-                <div class="chart-kicker">Projection chart</div>
-                <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Projected weight trend</div>
-                <div class="chart-note">
-                    A simple week-by-week view of steady progress toward your goal.
-                    This is meant to guide you, not pressure you.
-                </div>
-                <div class="chart-frame">
-            """,
-            unsafe_allow_html=True,
-        )
-        st.line_chart(projection_df.set_index("Week")["Projected weight"], use_container_width=True)
-        st.markdown("</div></div>", unsafe_allow_html=True)
 
         st.markdown('<div id="milestones"></div>', unsafe_allow_html=True)
         st.subheader("Weight milestones")
