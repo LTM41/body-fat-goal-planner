@@ -1044,7 +1044,7 @@ with right:
             {"Measure": "Goal weight", "Value": f"{goal_weight} lbs"},
             {"Measure": "BMI", "Value": bmi_value},
             {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
-            {"Measure": "WHtR <span style='font-size:0.78rem;color:#6b7280;'>(waist-to-height ratio)</span>", "Value": whtr_value},
+            {"Measure": "WHtR (waist-to-height ratio)", "Value": whtr_value},
             {"Measure": "WHtR zone", "Value": whtr_category(whtr_value)},
             {"Measure": "Lbs to lose", "Value": round(max(0, weight - goal_weight), 2)},
             {"Measure": "Weeks to goal", "Value": weeks_to_goal},
