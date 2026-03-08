@@ -882,7 +882,6 @@ with left:
     height = st.number_input("Height (inches)", min_value=1.0, value=70.0, step=0.1)
     waist = st.number_input("Waist (inches)", min_value=1.0, value=40.5, step=0.1)
     neck = st.number_input("Neck (inches)", min_value=1.0, value=17.0, step=0.1)
-    st.markdown('<div class="input-shell"><div class="input-group-title">Goal settings</div></div>', unsafe_allow_html=True)
 
     hips = st.number_input(
         "Hips (inches)",
