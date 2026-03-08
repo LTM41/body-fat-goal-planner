@@ -1004,28 +1004,6 @@ with left:
         st.rerun()
 st.markdown('<div id="results"></div>', unsafe_allow_html=True)
 with right:
-    st.markdown(
-        """
-        <div class="panel-card">
-            <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;">Your results</div>
-            <div class="soft-note">Live results, milestones, and macro guidance.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div class="panel-card">
-            <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">How it works</div>
-            <div class="soft-note">
-                This planner estimates body fat from your measurements, then uses your lean mass to project a goal weight at your chosen target body-fat level.
-                It also gives a simple calorie and macro guide based on your current details and activity level.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
     try:
@@ -1095,15 +1073,8 @@ with right:
 
         if not progress_df.empty:
             st.markdown('<div id="progress"></div>', unsafe_allow_html=True)
-            st.markdown(
-                """
-                <div class="panel-card" style="padding-bottom:14px;">
-                    <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Real progress</div>
-                    <div class="soft-note">Your saved entries sit here so you can compare actual progress with the plan.</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.subheader("Real progress")
+            st.caption("Your saved entries sit here so you can compare actual progress with the plan.")
 
             pg1, pg2, pg3 = st.columns(3)
             latest_progress = progress_df.sort_values("date").iloc[-1]
@@ -1127,15 +1098,8 @@ with right:
                 st.dataframe(progress_df.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
-        st.markdown(
-            """
-            <div class="panel-card" style="padding-bottom:14px;">
-                <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Your fat-loss path</div>
-                <div class="soft-note">Milestones and macro targets are shown below in a cleaner list format.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.subheader("Your fat-loss path")
+        st.caption("Milestones and macro targets are shown below in a cleaner list format.")
 
         projection_df = build_projection_df(weight, goal_weight, weekly_loss)
 
