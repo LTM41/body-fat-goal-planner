@@ -852,42 +852,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """
-    <div class="hero-card">
-        <div class="hero-orb one"></div>
-        <div class="hero-orb two"></div>
-        <div style="position:relative;z-index:2;">
-            <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6f87a7;margin-bottom:8px;">Body Fat Burning Planner</div>
-            <div style="font-size:1.42rem;font-weight:800;margin-bottom:8px;line-height:1.2;color:#1f2937;">Calm planning for steady body recomposition</div>
-            <div class="soft-note" style="max-width:760px;">
-                Enter your details on the left and your results update live on the right.
-                This planner is designed to feel calm, honest, and easy to follow — because real fat loss usually takes consistency over time, not perfection in a few weeks.
-            </div>
-            <div style="margin-top:12px;">
-                <span class="callout-chip">Calm layout</span>
-                <span class="callout-chip">Realistic timelines</span>
-                <span class="callout-chip">Clear macro targets</span>
-            </div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 
 st.markdown(
     """
-    <div class="panel-card" style="margin-top:-4px;">
-        <div style="font-size:0.95rem;font-weight:700;margin-bottom:4px;">Planner, not a promise</div>
-        <div class="soft-note">
-            These numbers are estimates based on the information you enter. Real progress varies with sleep, adherence, activity, hydration, and normal body fluctuations.
-        </div>
-        <div style="margin-top:8px;">
-            <span class="callout-chip">Estimate based</span>
-            <span class="callout-chip">Realistic pace</span>
-            <span class="callout-chip">Built for consistency</span>
-        </div>
+    <div class="panel-card" style="padding-bottom:14px; margin-top:6px;">
+        <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Start here</div>
+        <div class="soft-note">Enter your details first, then use the results on the right to review your goal weight, timeline, milestones, macros, and progress.</div>
     </div>
     """,
     unsafe_allow_html=True,
