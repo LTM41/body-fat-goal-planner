@@ -415,93 +415,6 @@ html, body, [class*="css"] {
     min-height: 112px;
 }
 
-.top-summary-card {
-    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(249,250,252,0.94) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 24px;
-    padding: 16px 18px 14px 18px;
-    box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
-    margin-bottom: 14px;
-}
-
-.top-summary-kicker {
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7b8ba5;
-    margin-bottom: 4px;
-}
-
-.top-summary-value {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #1f2937;
-    line-height: 1.2;
-    margin-bottom: 4px;
-}
-
-.top-summary-note {
-    font-size: 0.82rem;
-    line-height: 1.45;
-    color: #6b7280;
-}
-
-
-
-.apple-card {
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 24px;
-    padding: 18px 18px 14px 18px;
-    margin-bottom: 14px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(249, 250, 252, 0.93) 100%);
-    box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
-    backdrop-filter: blur(10px);
-    min-height: 176px;
-}
-
-.apple-card-title {
-    font-size: 0.88rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1.4;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-}
-
-.apple-card-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    color: white;
-    font-weight: 700;
-    font-size: 0.68rem;
-    margin-bottom: 10px;
-    line-height: 1.3;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    max-width: 100%;
-}
-
-.apple-card-body {
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: #111827;
-}
-
-.apple-card-body div {
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-}
-
-.apple-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 22px 38px rgba(114, 132, 160, 0.14);
-    transition: all 0.22s ease;
-}
 
 .panel-card {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 251, 253, 0.92) 100%);
@@ -845,7 +758,7 @@ st.markdown(
             <a href="#progress">Progress</a> ·
             <a href="#milestones">Milestones</a> ·
             <a href="#macros">Macros</a> ·
-            <a href="#community">Community</a>
+            <a href="#top">Top</a>
         </div>
     </div>
     """,
@@ -939,40 +852,6 @@ with left:
     if protein_pct + carbs_pct + fats_pct != 100:
         st.warning("Protein %, carbs %, and fats % should add up to 100.")
 
-    top1, top2, top3 = st.columns(3)
-    with top1:
-        st.markdown(
-            f"""
-            <div class="top-summary-card">
-                <div class="top-summary-kicker">Current weight</div>
-                <div class="top-summary-value">{weight:.1f} lbs</div>
-                <div class="top-summary-note">Your starting point for this plan.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with top2:
-        st.markdown(
-            f"""
-            <div class="top-summary-card">
-                <div class="top-summary-kicker">Target body fat</div>
-                <div class="top-summary-value">{target_body_fat}%</div>
-                <div class="top-summary-note">The body-fat level you are aiming for.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with top3:
-        st.markdown(
-            f"""
-            <div class="top-summary-card">
-                <div class="top-summary-kicker">Weekly pace</div>
-                <div class="top-summary-value">{weekly_loss:.2f} lbs</div>
-                <div class="top-summary-note">A steady weekly fat-loss target.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
     st.markdown(
         """
@@ -1212,7 +1091,7 @@ with right:
             """
             <div class="panel-card" style="padding-bottom:14px;">
                 <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">Your fat-loss path</div>
-                <div class="soft-note">Milestones and macro targets are shown in simple cards so the journey feels easier to follow.</div>
+                <div class="soft-note">Milestones and macro targets are shown below in a cleaner list format.</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -1225,47 +1104,25 @@ with right:
         milestone_weights = build_weight_milestones(weight, goal_weight)
         st.caption("Simple guide: these are your estimated dates for each milestone weight.")
 
-        milestone_cards_per_row = 2
-        for i in range(0, len(milestone_weights), milestone_cards_per_row):
-            row_items = milestone_weights[i:i + milestone_cards_per_row]
-            cols = st.columns(milestone_cards_per_row)
+        milestone_rows = []
+        for mw in milestone_weights:
+            if mw == round(goal_weight):
+                status = "Goal"
+            elif mw < weight:
+                status = "Milestone"
+            else:
+                status = "Current range"
 
-            for col, mw in zip(cols, row_items):
-                target_date = predict_date_for_weight(weight, mw, weekly_loss)
-
-                if mw == round(goal_weight):
-                    badge_text = "Goal"
-                    badge_color = "#7FA3D6"
-                elif mw < weight:
-                    badge_text = "Milestone"
-                    badge_color = "#8FC9A8"
-                else:
-                    badge_text = "Current range"
-                    badge_color = "#A8B7C9"
-
-                with col:
-                    st.markdown(
-                        f"""
-                        <div class="apple-card">
-                            <div class="apple-card-title">Weight: {mw} lbs</div>
-                            <div class="apple-card-badge" style="background:{badge_color};">{badge_text}</div>
-                            <div class="apple-card-body">
-                                <div><strong>Status:</strong> {badge_text}</div>
-                                <div><strong>Target date:</strong> {target_date}</div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-        with st.expander("Show milestone table"):
-            milestone_df = pd.DataFrame(
+            milestone_rows.append(
                 {
-                    "Weight": [f"{mw} lbs" for mw in milestone_weights],
-                    "Target date": [predict_date_for_weight(weight, mw, weekly_loss) for mw in milestone_weights],
+                    "Weight": f"{mw} lbs",
+                    "Status": status,
+                    "Target date": predict_date_for_weight(weight, mw, weekly_loss),
                 }
             )
-            st.dataframe(milestone_df, use_container_width=True, hide_index=True)
+
+        milestone_df = pd.DataFrame(milestone_rows)
+        st.dataframe(milestone_df, use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div id="macros"></div>', unsafe_allow_html=True)
@@ -1295,44 +1152,20 @@ with right:
                 fats_pct=fats_pct,
             )
 
-            st.caption("Simple guide: each card shows a calm daily target for that body weight.")
+            st.caption("Simple guide: each row shows a calm daily target for that body weight.")
 
             est_rows = []
             for gw in goal_weights:
                 est_bf = round((1 - (lean_mass / gw)) * 100, 1)
-                zone_label, zone_color, _ = gout_risk_zone_from_body_fat(est_bf)
-                est_rows.append((gw, est_bf, zone_label, zone_color))
+                zone_label, _, _ = gout_risk_zone_from_body_fat(est_bf)
+                est_rows.append((gw, est_bf, zone_label))
 
-            cards_per_row = 2
-            for i in range(0, len(est_rows), cards_per_row):
-                row_items = est_rows[i:i + cards_per_row]
-                cols = st.columns(cards_per_row)
+            goal_macro_df = goal_macro_df.copy()
+            goal_macro_df["Estimated BF %"] = [row[1] for row in est_rows]
+            goal_macro_df["Zone"] = [row[2] for row in est_rows]
+            goal_macro_df = goal_macro_df[["Weight", "Zone", "Estimated BF %", "Calories", "Protein", "Carbs", "Fats"]]
 
-                for col, item in zip(cols, row_items):
-                    gw, est_bf, zone_label, zone_color = item
-                    row_data = goal_macro_df[goal_macro_df["Weight"] == f"{gw} lbs"].iloc[0]
-
-                    with col:
-                        st.markdown(
-                            f"""
-                            <div class="apple-card">
-                                <div class="apple-card-title">Weight: {row_data['Weight']}</div>
-                                <div class="apple-card-badge" style="background:{zone_color};">{zone_label} · est {est_bf}% body fat</div>
-                                <div class="apple-card-body">
-                                    <div><strong>Zone:</strong> {zone_label}</div>
-                                    <div><strong>Estimated body fat:</strong> {est_bf}%</div>
-                                    <div><strong>Calories:</strong> {row_data['Calories']} kcal</div>
-                                    <div><strong>Protein:</strong> {row_data['Protein']}</div>
-                                    <div><strong>Carbs:</strong> {row_data['Carbs']}</div>
-                                    <div><strong>Fats:</strong> {row_data['Fats']}</div>
-                                </div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-            with st.expander("Show macro table"):
-                st.dataframe(goal_macro_df, use_container_width=True, hide_index=True)
+            st.dataframe(goal_macro_df, use_container_width=True, hide_index=True)
 
     except ValueError as e:
         st.error(str(e))
