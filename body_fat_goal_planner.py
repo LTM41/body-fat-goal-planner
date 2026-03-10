@@ -320,26 +320,6 @@ def build_macro_weight_targets(current_weight, goal_weight, count=6):
     return sorted(set(cleaned), reverse=(goal_weight < current_weight))[:count]
 
 
-def build_projection_df(current_weight, goal_weight, weekly_change):
-    if weekly_change <= 0:
-        return pd.DataFrame({"Week": [0], "Projected weight": [round(current_weight, 1)]})
-
-    weeks_needed = max(0, estimated_weeks_to_goal(current_weight, goal_weight, weekly_change))
-    rows = []
-
-    for week in range(weeks_needed + 1):
-        if goal_weight < current_weight:
-            projected = max(goal_weight, current_weight - (weekly_change * week))
-        elif goal_weight > current_weight:
-            projected = min(goal_weight, current_weight + (weekly_change * week))
-        else:
-            projected = current_weight
-        rows.append({"Week": week, "Projected weight": round(projected, 1)})
-
-    if rows and rows[-1]["Projected weight"] != round(goal_weight, 1):
-        rows.append({"Week": weeks_needed + 1, "Projected weight": round(goal_weight, 1)})
-
-    return pd.DataFrame(rows)
 
 
 def ensure_progress_csv_exists():
@@ -572,18 +552,6 @@ input::placeholder {
 }
 
 
-    .panel-card {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 251, 253, 0.92) 100%);
-        border: 1px solid rgba(231, 235, 241, 0.98);
-        border-radius: 28px;
-        padding: 20px 20px 14px 20px;
-        box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
-        backdrop-filter: blur(10px);
-        margin-bottom: 18px;
-    }
-
-    .panel-card *,
-    .input-shell *,
     .zone-marker-wrap *,
     .zone-bar-shell *,
     [data-testid="stExpander"] *,
@@ -595,125 +563,6 @@ input::placeholder {
         color: #1f2937 !important;
     }
 
-.input-shell {
-    background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(249,250,252,0.93) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 26px;
-    padding: 18px 18px 10px 18px;
-    box-shadow: 0 16px 34px rgba(114, 132, 160, 0.10);
-    margin-bottom: 16px;
-}
-
-.input-group-title {
-    font-size: 0.82rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7b8ba5;
-    margin-bottom: 10px;
-}
-
-.hero-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.99) 0%, rgba(238,245,255,0.98) 42%, rgba(251,247,243,0.98) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 34px;
-    padding: 28px 28px 24px 28px;
-    box-shadow: 0 22px 48px rgba(114, 132, 160, 0.14);
-    margin: 10px 0 20px 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(2px);
-    opacity: 0.55;
-}
-
-.hero-orb.one {
-    width: 180px;
-    height: 180px;
-    right: -42px;
-    top: -36px;
-    background: rgba(163, 191, 250, 0.26);
-}
-
-.hero-orb.two {
-    width: 120px;
-    height: 120px;
-    right: 92px;
-    bottom: -42px;
-    background: rgba(182, 226, 211, 0.24);
-}
-
-.section-row-space {
-    margin-top: 4px;
-    margin-bottom: 6px;
-}
-
-.callout-chip {
-    display: inline-block;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.86);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    color: #516072;
-    font-size: 0.79rem;
-    font-weight: 700;
-    margin: 6px 8px 0 0;
-    box-shadow: 0 6px 18px rgba(114, 132, 160, 0.08);
-}
-
-.soft-note {
-    color: #6b7280;
-    font-size: 0.92rem;
-    line-height: 1.65;
-}
-
-.chart-panel {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 252, 0.94) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.98);
-    border-radius: 26px;
-    padding: 18px 18px 14px 18px;
-    box-shadow: 0 18px 38px rgba(114, 132, 160, 0.12);
-    backdrop-filter: blur(10px);
-    margin-bottom: 18px;
-    min-height: 430px;
-    display: flex;
-    flex-direction: column;
-}
-
-.chart-note {
-    color: #6b7280;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 10px;
-    min-height: 58px;
-}
-
-.chart-frame {
-    background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(244,247,251,0.82) 100%);
-    border: 1px solid rgba(231, 235, 241, 0.92);
-    border-radius: 22px;
-    padding: 10px 12px 6px 12px;
-    margin-top: 10px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.chart-kicker {
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #7b8ba5;
-    margin-bottom: 4px;
-    min-height: 18px;
-}
 
 .beauty-divider {
     height: 1px;
@@ -1094,7 +943,6 @@ with right:
         st.subheader("Your fat-loss path")
         st.caption("Milestones and macro targets are shown below in a cleaner list format.")
 
-        projection_df = build_projection_df(weight, goal_weight, weekly_loss)
 
         st.markdown('<div id="milestones"></div>', unsafe_allow_html=True)
         st.subheader("Weight milestones")
