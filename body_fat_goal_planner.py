@@ -856,7 +856,7 @@ with left:
     neck = st.number_input("Neck (inches — just below Adam’s apple)", min_value=1.0, value=15.0, step=0.1)
 
     hips = st.number_input(
-        "Hips (inches)",
+        "Hips (inches — widest point)",
         min_value=0.0,
         value=0.0 if sex == "Male" else 40.0,
         step=0.1,
