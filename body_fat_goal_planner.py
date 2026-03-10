@@ -654,7 +654,7 @@ st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 title_col, visits_col = st.columns([0.82, 0.18])
 with title_col:
     st.title("Body Fat Burning Planner 🔥")
-    st.caption("Calm, honest fat-loss planning — realistic timelines, macro guidance and progress tracking.")
+    st.caption("Simple body-fat planning with realistic timelines, calorie guidance, and progress tracking.")
 with visits_col:
     st.markdown(
         f"""
@@ -680,7 +680,7 @@ st.markdown(
         </div>
         <div style="font-size:0.9rem;font-weight:700;margin-bottom:6px;">How to use</div>
         <div style="font-size:0.85rem;line-height:1.6;color:#6b7280;">
-            Fill in your details on the left, then read your results on the right.
+            Fill in your details on the left, then check your results, milestones, and calories on the right.
         </div>
     </div>
     """,
@@ -764,7 +764,7 @@ with left:
 
 
     st.subheader("Tools")
-    st.caption("Download or reset your progress data.")
+    st.caption("Download or reset your saved progress entries.")
 
     download_col1, download_col2 = st.columns(2)
     with download_col1:
@@ -790,7 +790,7 @@ with left:
     pt1, pt2, pt3 = st.columns(3)
     with pt1:
         progress_weight = st.number_input(
-            "Progress weight (lbs)",
+            "Current weight (lbs)",
             min_value=1.0,
             value=float(weight),
             step=0.1,
@@ -798,7 +798,7 @@ with left:
         )
     with pt2:
         progress_waist = st.number_input(
-            "Progress waist (inches)",
+            "Current waist (inches)",
             min_value=1.0,
             value=float(waist),
             step=0.1,
@@ -806,7 +806,7 @@ with left:
         )
     with pt3:
         progress_body_fat = st.number_input(
-            "Progress body fat %",
+            "Current body fat %",
             min_value=1.0,
             max_value=60.0,
             value=float(round(preview_bf, 2)),
@@ -928,12 +928,12 @@ with right:
             {"Measure": "BMI", "Value": bmi_value},
             {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
             {"Measure": "WHtR (waist-to-height ratio)", "Value": whtr_value},
-            {"Measure": "WHtR zone", "Value": whtr_category(whtr_value)},
+            {"Measure": "Waist-to-height risk", "Value": whtr_category(whtr_value)},
             {"Measure": "Lbs to goal", "Value": round(abs(weight - goal_weight), 2)},
             {"Measure": "Weeks to goal", "Value": weeks_to_goal},
             {"Measure": "Months to goal", "Value": months_to_goal},
             {"Measure": "Goal date", "Value": goal_date},
-            {"Measure": "Body fat zone", "Value": body_fat_category(sex, bf)},
+            {"Measure": "Body fat category", "Value": body_fat_category(sex, bf)},
         ]
 
         st.subheader("Results summary")
@@ -947,7 +947,7 @@ with right:
         st.markdown('<div id="milestones"></div>', unsafe_allow_html=True)
         st.subheader("Weight milestones")
         milestone_weights = build_weight_milestones(weight, goal_weight)
-        st.caption("Simple guide: these are your estimated dates for each milestone weight.")
+        st.caption("These are your estimated dates for each milestone weight.")
 
         milestone_rows = []
         for mw in milestone_weights:
@@ -1001,7 +1001,7 @@ with right:
                 fats_pct=fats_pct,
             )
 
-            st.caption("Simple guide: each row shows a calm daily target for one of your 6 key goal weights.")
+            st.caption("Each row shows a daily calorie and macro target for one of your 6 key goal weights.")
 
             est_rows = []
             for gw in goal_weights:
@@ -1034,7 +1034,7 @@ st.markdown(
     """
     <div style="margin-top:18px;color:#6b7280;font-size:0.84rem;text-align:center;line-height:1.6;">
         Body Fat Burning Planner<br>
-        Built for calm, realistic progress.
+        Built for simple, realistic progress.
         <div style="margin-top:8px;font-size:0.8rem;line-height:1.6;">
             Disclaimer: This planner provides estimates for educational purposes only and is not medical advice.
             Real progress varies with health, hydration, adherence, sleep, stress, and normal body fluctuations.
