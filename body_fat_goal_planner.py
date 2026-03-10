@@ -320,15 +320,20 @@ def build_macro_weight_targets(current_weight, goal_weight, count=6):
     return sorted(set(cleaned), reverse=(goal_weight < current_weight))[:count]
 
 
-def build_projection_df(current_weight, goal_weight, weekly_loss):
-    if weekly_loss <= 0:
+def build_projection_df(current_weight, goal_weight, weekly_change):
+    if weekly_change <= 0:
         return pd.DataFrame({"Week": [0], "Projected weight": [round(current_weight, 1)]})
 
-    weeks_needed = max(0, estimated_weeks_to_goal(current_weight, goal_weight, weekly_loss))
+    weeks_needed = max(0, estimated_weeks_to_goal(current_weight, goal_weight, weekly_change))
     rows = []
 
     for week in range(weeks_needed + 1):
-        projected = max(goal_weight, current_weight - (weekly_loss * week))
+        if goal_weight < current_weight:
+            projected = max(goal_weight, current_weight - (weekly_change * week))
+        elif goal_weight > current_weight:
+            projected = min(goal_weight, current_weight + (weekly_change * week))
+        else:
+            projected = current_weight
         rows.append({"Week": week, "Projected weight": round(projected, 1)})
 
     if rows and rows[-1]["Projected weight"] != round(goal_weight, 1):
@@ -804,9 +809,9 @@ with title_col:
 with visits_col:
     st.markdown(
         f"""
-        <div style="text-align:right; padding-top:12px;">
-            <div style="font-size:0.68rem; font-weight:700; color:#6b7280; margin-bottom:2px; letter-spacing:0.04em; text-transform:uppercase;">Visitors</div>
-            <div style="font-size:1rem; font-weight:800; color:#1f2937;">{total_visits}</div>
+        <div style="text-align:right; padding-top:14px; opacity:0.88;">
+            <div style="font-size:0.62rem; font-weight:700; color:#7b8794; margin-bottom:1px; letter-spacing:0.06em; text-transform:uppercase;">Visitors</div>
+            <div style="font-size:0.92rem; font-weight:700; color:#4b5563;">{total_visits}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -843,12 +848,12 @@ st.markdown('<div id="inputs"></div>', unsafe_allow_html=True)
 with left:
 
 
-    sex = st.selectbox("Sex", ["Select sex", "Male", "Female"], index=0)
+    sex = st.selectbox("Choose sex", ["Choose sex", "Male", "Female"], index=0)
     age = st.number_input("Age", min_value=10, max_value=100, value=30, step=1)
     weight = st.number_input("Weight (lbs)", min_value=1.0, value=180.0, step=0.1)
     height = st.number_input("Height (inches)", min_value=1.0, value=68.0, step=0.1)
     waist = st.number_input("Waist (inches — around belly button)", min_value=1.0, value=36.0, step=0.1)
-    neck = st.number_input("Neck (inches)", min_value=1.0, value=15.0, step=0.1)
+    neck = st.number_input("Neck (inches — just below Adam’s apple)", min_value=1.0, value=15.0, step=0.1)
 
     hips = st.number_input(
         "Hips (inches)",
@@ -859,7 +864,7 @@ with left:
     )
 
     try:
-        if sex == "Select sex":
+        if sex == "Choose sex":
             preview_bf = 25.0
         else:
             preview_bf = navy_body_fat(sex, height, waist, neck, hips)
@@ -1023,8 +1028,8 @@ with right:
 
 
     try:
-        if sex == "Select sex":
-            raise ValueError("Please select Male or Female to calculate your results.")
+        if sex == "Choose sex":
+            raise ValueError("Please choose Male or Female to calculate your results.")
         bf = navy_body_fat(sex, height, waist, neck, hips)
         fat_mass, lean_mass = body_composition(weight, bf)
         goal_weight = goal_weight_for_target_body_fat(lean_mass, target_body_fat)
