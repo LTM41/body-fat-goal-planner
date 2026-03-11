@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import streamlit as st
+import altair as alt
 
 
 PROGRESS_CSV = "body_fat_goal_progress.csv"
@@ -228,6 +229,192 @@ def macro_targets_from_calories(calories, protein_pct=30, carbs_pct=40, fats_pct
         "fats_g": fats_g,
     }
 
+
+
+# =============================
+# Helper functions for results section
+# =============================
+def calculate_all_results(
+    sex,
+    age,
+    weight,
+    height,
+    waist,
+    neck,
+    hips,
+    target_body_fat,
+    weekly_loss,
+    activity_label,
+    calorie_deficit,
+    protein_pct,
+    carbs_pct,
+    fats_pct,
+):
+    bf = navy_body_fat(sex, height, waist, neck, hips)
+    fat_mass, lean_mass = body_composition(weight, bf)
+    goal_weight = goal_weight_for_target_body_fat(lean_mass, target_body_fat)
+    weeks_to_goal = estimated_weeks_to_goal(weight, goal_weight, weekly_loss)
+    goal_date = projected_goal_date(weeks_to_goal)
+    bmi_value = bmi(weight, height)
+    whtr_value = waist_to_height_ratio(waist, height)
+    current_maintenance = maintenance_calories(
+        sex=sex,
+        weight_lbs=weight,
+        height_inches=height,
+        age=age,
+        activity_label=activity_label,
+    )
+    current_cutting = cutting_calories(current_maintenance, calorie_deficit)
+    current_macros = macro_targets_from_calories(
+        current_cutting,
+        protein_pct=protein_pct,
+        carbs_pct=carbs_pct,
+        fats_pct=fats_pct,
+    )
+    macro_total_ok = (protein_pct + carbs_pct + fats_pct) == 100
+    months_to_goal = round(weeks_to_goal / 4.345, 1) if weeks_to_goal > 0 else 0
+
+    return {
+        "bf": bf,
+        "fat_mass": fat_mass,
+        "lean_mass": lean_mass,
+        "goal_weight": goal_weight,
+        "weeks_to_goal": weeks_to_goal,
+        "goal_date": goal_date,
+        "bmi_value": bmi_value,
+        "whtr_value": whtr_value,
+        "current_maintenance": current_maintenance,
+        "current_cutting": current_cutting,
+        "current_macros": current_macros,
+        "macro_total_ok": macro_total_ok,
+        "months_to_goal": months_to_goal,
+    }
+
+
+def build_results_summary(
+    sex,
+    bf,
+    fat_mass,
+    lean_mass,
+    goal_weight,
+    bmi_value,
+    whtr_value,
+    weight,
+    weeks_to_goal,
+    months_to_goal,
+    goal_date,
+):
+    overview_rows = [
+        {"Measure": "Body fat %", "Value": bf},
+        {"Measure": "Fat mass", "Value": f"{fat_mass} lbs"},
+        {"Measure": "Lean mass", "Value": f"{lean_mass} lbs"},
+        {"Measure": "Goal weight", "Value": f"{goal_weight} lbs"},
+        {"Measure": "BMI", "Value": bmi_value},
+        {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
+        {"Measure": "WHtR (waist-to-height ratio)", "Value": whtr_value},
+        {"Measure": "Waist-to-height risk", "Value": whtr_category(whtr_value)},
+        {"Measure": "Lbs to goal", "Value": round(abs(weight - goal_weight), 2)},
+        {"Measure": "Weeks to goal", "Value": weeks_to_goal},
+        {"Measure": "Months to goal", "Value": months_to_goal},
+        {"Measure": "Goal date", "Value": goal_date},
+        {"Measure": "Body fat category", "Value": body_fat_category(sex, bf)},
+    ]
+    return pd.DataFrame(overview_rows)
+
+
+def build_milestone_table(current_weight, goal_weight, weekly_loss):
+    milestone_weights = build_weight_milestones(current_weight, goal_weight)
+    milestone_rows = []
+
+    for mw in milestone_weights:
+        if mw == round(goal_weight):
+            status = "Goal"
+        elif goal_weight < current_weight:
+            status = "Milestone" if mw < current_weight else "Current range"
+        else:
+            status = "Milestone" if mw > current_weight else "Current range"
+
+        milestone_rows.append(
+            {
+                "Weight": f"{mw} lbs",
+                "Status": status,
+                "Target date": predict_date_for_weight(current_weight, mw, weekly_loss),
+            }
+        )
+
+    return pd.DataFrame(milestone_rows)
+
+
+def build_today_macro_table(current_maintenance, current_cutting, current_macros):
+    return pd.DataFrame(
+        [
+            {"Today": "Maintenance calories", "Value": f"{int(current_maintenance)} kcal"},
+            {"Today": "Cutting calories", "Value": f"{int(current_cutting)} kcal"},
+            {"Today": "Protein", "Value": f"{current_macros['protein_g']} g"},
+            {"Today": "Carbs / fats", "Value": f"{current_macros['carbs_g']} g / {current_macros['fats_g']} g"},
+        ]
+    )
+
+
+def build_progress_chart_df(progress_df):
+    if progress_df.empty:
+        return pd.DataFrame()
+
+    chart_df = progress_df.copy()
+
+    if "date_dt" not in chart_df.columns and "date" in chart_df.columns:
+        chart_df["date_dt"] = pd.to_datetime(chart_df["date"], errors="coerce")
+
+    if "date_dt" not in chart_df.columns:
+        return pd.DataFrame()
+
+    chart_df = chart_df.dropna(subset=["date_dt"]).copy()
+    if chart_df.empty:
+        return pd.DataFrame()
+
+    chart_df = chart_df.sort_values(["date_dt", "entry_id"], ascending=[True, True]).reset_index(drop=True)
+    chart_df["date_label"] = chart_df["date_dt"].dt.strftime("%Y-%m-%d")
+    return chart_df
+
+
+
+def render_progress_chart(chart_df, value_column, title):
+    if chart_df.empty or value_column not in chart_df.columns:
+        return
+
+    plot_df = chart_df.dropna(subset=[value_column]).copy()
+    if plot_df.empty:
+        return
+
+    chart = (
+        alt.Chart(plot_df)
+        .mark_line(point=True)
+        .encode(
+            x=alt.X("date_dt:T", title="Date"),
+            y=alt.Y(f"{value_column}:Q", title=title),
+            tooltip=[
+                alt.Tooltip("date_label:N", title="Date"),
+                alt.Tooltip(f"{value_column}:Q", title=title),
+            ],
+        )
+        .properties(title=title, height=240)
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+
+
+def render_progress_charts(progress_df):
+    chart_df = build_progress_chart_df(progress_df)
+    if chart_df.empty:
+        return
+
+    st.subheader("Progress charts")
+    st.caption("These charts show how your real logged progress is moving over time.")
+
+    render_progress_chart(chart_df, "weight", "Weight (lbs)")
+    render_progress_chart(chart_df, "body_fat", "Body fat %")
+    render_progress_chart(chart_df, "waist", "Waist (inches)")
 
 def build_goal_macro_table(
     sex,
@@ -870,6 +1057,8 @@ with left:
         )
         st.dataframe(latest_progress_df, use_container_width=True, hide_index=True)
 
+        render_progress_charts(progress_df_sidebar)
+
         with st.expander("Show saved progress table"):
             st.dataframe(progress_df_sidebar.sort_values("date", ascending=False), use_container_width=True, hide_index=True)
 st.markdown('<div id="results"></div>', unsafe_allow_html=True)
@@ -879,29 +1068,35 @@ with right:
     try:
         if sex == "Choose sex":
             raise ValueError("Please choose Male or Female to calculate your results.")
-        bf = navy_body_fat(sex, height, waist, neck, hips)
-        fat_mass, lean_mass = body_composition(weight, bf)
-        goal_weight = goal_weight_for_target_body_fat(lean_mass, target_body_fat)
-        weeks_to_goal = estimated_weeks_to_goal(weight, goal_weight, weekly_loss)
-        goal_date = projected_goal_date(weeks_to_goal)
-        bmi_value = bmi(weight, height)
-        whtr_value = waist_to_height_ratio(waist, height)
-
-        current_maintenance = maintenance_calories(
+        results = calculate_all_results(
             sex=sex,
-            weight_lbs=weight,
-            height_inches=height,
             age=age,
+            weight=weight,
+            height=height,
+            waist=waist,
+            neck=neck,
+            hips=hips,
+            target_body_fat=target_body_fat,
+            weekly_loss=weekly_loss,
             activity_label=activity_label,
-        )
-        current_cutting = cutting_calories(current_maintenance, calorie_deficit)
-        current_macros = macro_targets_from_calories(
-            current_cutting,
+            calorie_deficit=calorie_deficit,
             protein_pct=protein_pct,
             carbs_pct=carbs_pct,
             fats_pct=fats_pct,
         )
-        macro_total_ok = (protein_pct + carbs_pct + fats_pct) == 100
+        bf = results["bf"]
+        fat_mass = results["fat_mass"]
+        lean_mass = results["lean_mass"]
+        goal_weight = results["goal_weight"]
+        weeks_to_goal = results["weeks_to_goal"]
+        goal_date = results["goal_date"]
+        bmi_value = results["bmi_value"]
+        whtr_value = results["whtr_value"]
+        current_maintenance = results["current_maintenance"]
+        current_cutting = results["current_cutting"]
+        current_macros = results["current_macros"]
+        macro_total_ok = results["macro_total_ok"]
+        months_to_goal = results["months_to_goal"]
         progress_df = load_progress_df()
         if "date_dt" in progress_df.columns:
             progress_df = progress_df.sort_values(["date_dt", "entry_id"], ascending=[True, True]).reset_index(drop=True)
@@ -909,64 +1104,44 @@ with right:
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
         st.subheader("Progress to target")
         if not progress_df.empty and "body_fat" in progress_df.columns:
-            start_bf_for_progress = float(progress_df["body_fat"].dropna().iloc[0]) if not progress_df["body_fat"].dropna().empty else bf
+            latest_logged_bf = progress_df["body_fat"].dropna()
+            current_bf_for_progress = float(latest_logged_bf.iloc[-1]) if not latest_logged_bf.empty else bf
+            start_bf_for_progress = float(latest_logged_bf.iloc[0]) if not latest_logged_bf.empty else bf
         else:
+            current_bf_for_progress = bf
             start_bf_for_progress = bf
-        progress_value = progress_ratio(bf, start_bf=start_bf_for_progress, target_bf=target_body_fat)
+        progress_value = progress_ratio(current_bf_for_progress, start_bf=start_bf_for_progress, target_bf=target_body_fat)
         st.progress(progress_value)
-        st.caption(f"Tracking from {round(start_bf_for_progress, 1)}% toward {target_body_fat}% body fat")
-        render_body_fat_zone_bar(bf)
+        st.caption(f"Tracking from {round(start_bf_for_progress, 1)}% toward {target_body_fat}% body fat. Latest logged: {round(current_bf_for_progress, 1)}%")
+        render_body_fat_zone_bar(current_bf_for_progress)
 
 
-        months_to_goal = round(weeks_to_goal / 4.345, 1) if weeks_to_goal > 0 else 0
-
-        overview_rows = [
-            {"Measure": "Body fat %", "Value": bf},
-            {"Measure": "Fat mass", "Value": f"{fat_mass} lbs"},
-            {"Measure": "Lean mass", "Value": f"{lean_mass} lbs"},
-            {"Measure": "Goal weight", "Value": f"{goal_weight} lbs"},
-            {"Measure": "BMI", "Value": bmi_value},
-            {"Measure": "BMI zone", "Value": bmi_category(bmi_value)},
-            {"Measure": "WHtR (waist-to-height ratio)", "Value": whtr_value},
-            {"Measure": "Waist-to-height risk", "Value": whtr_category(whtr_value)},
-            {"Measure": "Lbs to goal", "Value": round(abs(weight - goal_weight), 2)},
-            {"Measure": "Weeks to goal", "Value": weeks_to_goal},
-            {"Measure": "Months to goal", "Value": months_to_goal},
-            {"Measure": "Goal date", "Value": goal_date},
-            {"Measure": "Body fat category", "Value": body_fat_category(sex, bf)},
-        ]
+        summary_df = build_results_summary(
+            sex=sex,
+            bf=bf,
+            fat_mass=fat_mass,
+            lean_mass=lean_mass,
+            goal_weight=goal_weight,
+            bmi_value=bmi_value,
+            whtr_value=whtr_value,
+            weight=weight,
+            weeks_to_goal=weeks_to_goal,
+            months_to_goal=months_to_goal,
+            goal_date=goal_date,
+        )
 
         st.subheader("Results summary")
-        st.dataframe(pd.DataFrame(overview_rows), use_container_width=True, hide_index=True)
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
         st.subheader("Your fat-loss path")
         st.caption("Milestones and macro targets are shown below in a cleaner list format.")
 
-
         st.markdown('<div id="milestones"></div>', unsafe_allow_html=True)
         st.subheader("Weight milestones")
-        milestone_weights = build_weight_milestones(weight, goal_weight)
         st.caption("These are your estimated dates for each milestone weight.")
 
-        milestone_rows = []
-        for mw in milestone_weights:
-            if mw == round(goal_weight):
-                status = "Goal"
-            elif goal_weight < weight:
-                status = "Milestone" if mw < weight else "Current range"
-            else:
-                status = "Milestone" if mw > weight else "Current range"
-
-            milestone_rows.append(
-                {
-                    "Weight": f"{mw} lbs",
-                    "Status": status,
-                    "Target date": predict_date_for_weight(weight, mw, weekly_loss),
-                }
-            )
-
-        milestone_df = pd.DataFrame(milestone_rows)
+        milestone_df = build_milestone_table(weight, goal_weight, weekly_loss)
         st.dataframe(milestone_df, use_container_width=True, hide_index=True)
 
         st.markdown('<div class="beauty-divider"></div>', unsafe_allow_html=True)
@@ -976,13 +1151,10 @@ with right:
         if not macro_total_ok:
             st.error("Protein %, carbs %, and fats % must add up to exactly 100 before macro guidance can be shown.")
         else:
-            current_macro_df = pd.DataFrame(
-                [
-                    {"Today": "Maintenance calories", "Value": f"{int(current_maintenance)} kcal"},
-                    {"Today": "Cutting calories", "Value": f"{int(current_cutting)} kcal"},
-                    {"Today": "Protein", "Value": f"{current_macros['protein_g']} g"},
-                    {"Today": "Carbs / fats", "Value": f"{current_macros['carbs_g']} g / {current_macros['fats_g']} g"},
-                ]
+            current_macro_df = build_today_macro_table(
+                current_maintenance=current_maintenance,
+                current_cutting=current_cutting,
+                current_macros=current_macros,
             )
             st.dataframe(current_macro_df, use_container_width=True, hide_index=True)
 
